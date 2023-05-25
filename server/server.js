@@ -25,9 +25,9 @@ const data = [
   },
 ];
 
-app.use("/", authMiddleware);
+app.use("/api/v1", authMiddleware);
 
-app.post("/conversations", (request, response) => {
+app.post("/api/v1/conversations", (request, response) => {
   return response.send({ data });
 });
 
