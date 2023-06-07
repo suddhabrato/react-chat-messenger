@@ -29,9 +29,16 @@ const Navbar = () => {
   };
 
   const LogoutHandler = () => {
-    localStorage.removeItem("@token");
-    localStorage.removeItem("user");
-    setLoggedIn(false);
+    auth
+      .signOut()
+      .then(() => {
+        localStorage.removeItem("@token");
+
+        setLoggedIn(false);
+      })
+      .catch((error) => {
+        console.error("Error logging out:", error);
+      });
   };
 
   return (
