@@ -1,9 +1,19 @@
 const express = require("express");
 const cors = require("cors");
+const mongoose = require("mongoose");
+
 const authMiddleware = require("./auth-middleware");
 
+require("dotenv").config();
+
+const corsOptions = {
+  Credential: "true",
+};
+
 const app = express();
-app.use(cors());
+app.use(express.json());
+app.options("*", cors(corsOptions));
+app.use(cors(corsOptions));
 
 const data = [
   {
@@ -25,10 +35,21 @@ const data = [
   },
 ];
 
-app.use("/api/v1", authMiddleware);
-
-app.post("/api/v1/conversations", (request, response) => {
-  return response.send({ data });
+app.post("/api/v1/conversations", authMiddleware, (req, res) => {
+  return res.send({ data });
 });
 
-app.listen(4000, () => console.log("The server is running at PORT 4000"));
+app.use("/api/v1/user/", require("./routes/UserRouter"));
+
+const URI = process.env.DB_URL;
+
+mongoose
+  .connect(URI, {
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+  })
+  .then(() => console.log("DB Connection Successful"));
+
+const port = process.env.PORT || 8080;
+
+app.listen(port, () => console.log("The server is running at PORT 4000"));
