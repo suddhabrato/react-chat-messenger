@@ -27,8 +27,8 @@ async function authMiddleware(req, res, next) {
           .toLowerCase()
           .substring(0, 25),
       });
-      await newUser.save();
-      req.user = user;
+      const newUserReturned = await newUser.save();
+      req.user = newUserReturned;
     }
     next();
   } catch (err) {
