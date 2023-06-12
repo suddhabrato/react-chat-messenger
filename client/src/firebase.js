@@ -1,5 +1,5 @@
 import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, onAuthStateChanged } from "firebase/auth";
+import { getAuth, GoogleAuthProvider } from "firebase/auth";
 
 const firebaseConfig = {
   apiKey: "AIzaSyDoq1bn3K99qmhLo07Q-sROYLtiEQtGLHg",
@@ -15,10 +15,3 @@ const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 
 export const provider = new GoogleAuthProvider();
-
-onAuthStateChanged(auth, async (user) => {
-  if (user) {
-    const token = await auth?.currentUser?.getIdToken(true);
-    localStorage.setItem("@token", token);
-  }
-});

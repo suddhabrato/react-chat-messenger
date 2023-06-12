@@ -2,6 +2,7 @@ import { auth, provider } from "../../firebase";
 import { signInWithPopup } from "firebase/auth";
 import { useContext } from "react";
 import { UserContext } from "../../contexts/UserContext";
+import { Link } from "react-router-dom";
 
 const Navbar = () => {
   const { isLoggedIn, setLoggedIn } = useContext(UserContext);
@@ -44,7 +45,9 @@ const Navbar = () => {
   return (
     <div className="navbar bg-base-100 sticky top-0 z-50 backdrop-blur bg-opacity-60 lg:px-8">
       <div className="navbar-start">
-        <a className="btn btn-ghost normal-case text-xl">Messenger App</a>
+        <Link to="/" className="btn btn-ghost normal-case text-xl">
+          Messenger App
+        </Link>
       </div>
       <div className="navbar-end">
         {isLoggedIn ? (
