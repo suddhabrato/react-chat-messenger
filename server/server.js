@@ -1,8 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const mongoose = require("mongoose");
-
-const authMiddleware = require("./auth-middleware");
+const SocketServer = require("./socketServer");
 
 require("dotenv").config();
 
@@ -14,6 +13,13 @@ const app = express();
 app.use(express.json());
 app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
+
+const http = require("http").createServer(app);
+const io = require("socket.io")(http);
+
+io.on("connection", (socket) => {
+  SocketServer(socket);
+});
 
 app.use("/api/v1/user/", require("./routes/UserRouter"));
 app.use("/api/v1/conversations", require("./routes/ConversationRouter"));
@@ -29,4 +35,4 @@ mongoose
 
 const port = process.env.PORT || 8080;
 
-app.listen(port, () => console.log("The server is running at PORT 4000"));
+http.listen(port, () => console.log("Listening on PORT", port));
