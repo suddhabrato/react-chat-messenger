@@ -1,34 +1,9 @@
-import { auth, provider } from "../../firebase";
-import { signInWithPopup } from "firebase/auth";
-import { useContext } from "react";
-import { UserContext } from "../../contexts/UserContext";
 import { Link } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { signInWithGoogle } from "../../redux/actions/authActions";
 
 const LoginPage = () => {
-  const { isLoggedIn, setLoggedIn } = useContext(UserContext);
-
-  const SignInWithGoogle = () => {
-    signInWithPopup(auth, provider)
-      .then(async (result) => {
-        //3 - pick the result and store the token
-        console.log(result);
-        const user = {
-          name: result.user.displayName,
-          email: result.user.email,
-          photo: result.user.photoURL,
-        };
-        const token = await auth?.currentUser?.getIdToken(true);
-        if (token) {
-          localStorage.setItem("@token", token);
-          localStorage.setItem("user", JSON.stringify(user));
-          setLoggedIn(true);
-          console.log("success");
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  const user = useSelector((state) => state.auth.user);
 
   return (
     <div
@@ -41,26 +16,26 @@ const LoginPage = () => {
       <div className="hero-content text-center text-neutral-content">
         <div className="max-w-lg">
           <h1 className="mb-5 text-5xl font-bold">
-            {isLoggedIn
-              ? `Welcome ${JSON.parse(localStorage.getItem("user")).name}`
-              : "Hello there"}
+            {user ? `Welcome ${user.displayname}` : "Hello there"}
           </h1>
           <p className="mb-5">
             Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
             excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
             a id nisi.
           </p>
-          {!isLoggedIn ? (
+          {!user ? (
             <button
               className="btn btn-primary btn-outline btn-wide"
-              onClick={SignInWithGoogle}
+              onClick={signInWithGoogle}
             >
               Login with Google
             </button>
           ) : (
-            <button className="btn btn-success btn-outline btn-wide">
-              <Link to="/conversations">Go to conversations</Link>
-            </button>
+            <Link to="/conversations">
+              <button className="btn btn-success btn-outline btn-wide">
+                Go to conversations
+              </button>
+            </Link>
           )}
         </div>
       </div>

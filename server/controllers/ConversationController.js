@@ -8,7 +8,14 @@ const ConversationController = {
     try {
       const conversations = await Conversation.find({
         _id: { $in: req.user.conversations },
-      }).sort("-updatedAt");
+      })
+        .populate("participants")
+        .populate({
+          path: "messages",
+          options: { sort: { createdAt: -1 }, limit: 1 },
+          populate: { path: "author", select: "displayname" },
+        })
+        .sort("-updatedAt");
 
       res.json({ conversations });
     } catch (err) {
