@@ -13,3 +13,16 @@ export const getAllConversations = createAsyncThunk(
     }
   }
 );
+
+export const getAllMessages = createAsyncThunk(
+  "getAllMessages",
+  async ({ id }) => {
+    try {
+      const res = await api.get(`/conversations/${id}`);
+      console.log(res.data.messages);
+      return res?.data?.messages;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+);

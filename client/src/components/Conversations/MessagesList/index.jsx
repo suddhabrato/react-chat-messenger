@@ -1,114 +1,52 @@
-import React from "react";
+import { useDispatch, useSelector } from "react-redux";
 import MessageImage from "./MessageImage";
 import MessageText from "./MessageText";
+import { useEffect } from "react";
+import { getAllMessages } from "../../../redux/actions/conversationActions";
+import Loader from "../../Loader";
 
 const MessagesList = () => {
+  const dispatch = useDispatch();
+  const user = useSelector((state) => state.auth.user);
+  const conversationId = useSelector(
+    (state) => state.conversation.currentConversation
+  );
+  const messages = useSelector((state) => state.conversation.messages);
+  const isLoading = useSelector((state) => state.conversation.isLoading);
+
+  console.table(messages);
+  useEffect(() => {
+    if (conversationId) dispatch(getAllMessages({ id: conversationId }));
+  }, [conversationId, dispatch]);
+
+  if (isLoading && conversationId) return <Loader />;
+
   return (
     <div className="bg-base-200 w-full h-full p-4 lg:p-6 overflow-y-auto">
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate yousdsdsdsdgggggggggggggggggggggggggggggggg!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={false}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={false}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-      />
-      <MessageText
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={"I hate you!"}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-      />
-      <MessageImage
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={
-          "I hate y222222 2 2 32 32asd asd s as as das sda as das das d s sasd asd as das das dd sssssssssssssssssssssssssssssssssss ssssssss sssssssssss sssss ssssssss sssssssssssssss s 32 32 3222 2 ads asd as das ou!"
-        }
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={true}
-        image={
-          "https://images.pexels.com/photos/11845518/pexels-photo-11845518.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-        }
-      />
-      <MessageImage
-        avatar={"https://placeimg.com/192/192/people"}
-        author={"Anakin "}
-        body={""}
-        seenTime={"12:46"}
-        sentTime={"12:46"}
-        self={false}
-        image={
-          "https://images.pexels.com/photos/11845518/pexels-photo-11845518.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1"
-        }
-      />
+      {messages.map((message) => {
+        if (message.media.length > 0) {
+          return (
+            <MessageImage
+              key={message._id}
+              author={message.author?.displayname}
+              avatar={message.author?.avatar}
+              body={message?.text}
+              sentTime={message?.createdAt}
+              self={message?.author?._id === user._id}
+            />
+          );
+        } else
+          return (
+            <MessageText
+              key={message._id}
+              author={message.author?.displayname}
+              avatar={message.author?.avatar}
+              body={message?.text}
+              sentTime={message?.createdAt}
+              self={message?.author?._id === user._id}
+            />
+          );
+      })}
     </div>
   );
 };

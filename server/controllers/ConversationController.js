@@ -12,8 +12,9 @@ const ConversationController = {
         .populate("participants")
         .populate({
           path: "messages",
-          options: { sort: { createdAt: -1 }, limit: 1 },
+          options: { sort: { createdAt: -1 } },
           populate: { path: "author", select: "displayname" },
+          perDocumentLimit: 1,
         })
         .sort("-updatedAt");
 
@@ -26,16 +27,17 @@ const ConversationController = {
   getMessages: async (req, res) => {
     try {
       const { convId } = req.params;
-      const messages = await Conversation.find({
+      const messages = await Conversation.findOne({
         $and: [{ _id: convId }, { _id: { $in: req.user.conversations } }],
       })
         .select("messages")
         .populate({
           path: "messages",
           options: { sort: { updatedAt: -1 } },
+          populate: { path: "author", select: "displayname avatar" },
         });
 
-      res.json({ messages });
+      res.json(messages);
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

@@ -1,7 +1,42 @@
+import { useSelector } from "react-redux";
 import MessagesList from "../../components/Conversations/MessagesList";
 import { Link } from "react-router-dom";
 
 const MessageListPanel = () => {
+  const conversationId = useSelector(
+    (state) => state.conversation.currentConversation
+  );
+
+  const user = useSelector((state) => state.auth.user);
+
+  const conversationsList = useSelector(
+    (state) => state.conversation.conversationsList
+  );
+
+  const currentConversation = conversationsList.find(
+    (conversation) => conversation._id === conversationId
+  );
+
+  const getTitle = (conversation) => {
+    if (conversation.type === "Group") return conversation.title;
+
+    const otherParticipant = conversation.participants.find(
+      (participant) => participant._id != user._id
+    );
+
+    return otherParticipant.displayname;
+  };
+
+  const getAvatar = (conversation) => {
+    if (conversation.type === "Group") return conversation.avatar;
+
+    const otherParticipant = conversation.participants.find(
+      (participant) => participant._id != user._id
+    );
+
+    return otherParticipant.avatar;
+  };
+
   return (
     <div className="flex flex-col w-full h-full bg-base-200 lg:rounded-2xl overflow-hidden">
       <div className="flex bg-base-300 px-1 lg:px-4 py-2 items-center w-full">
@@ -30,12 +65,12 @@ const MessageListPanel = () => {
             <div className="flex items-center gap-3 w-full">
               <div className="avatar online">
                 <div className="w-10 rounded-full">
-                  <img src={"https://placeimg.com/192/192/people"} />
+                  <img src={getAvatar(currentConversation)} />
                 </div>
               </div>
               <div className="flex flex-col justify-center items-start gap-0 truncate w-full">
                 <h3 className="text-lg font-medium truncate leading-tight">
-                  Suddhabrato Ghoshsssssssssssssss
+                  {getTitle(currentConversation)}
                 </h3>
                 <p className="text-xs leading-tight">Active Now</p>
               </div>

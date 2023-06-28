@@ -1,12 +1,17 @@
 /* eslint-disable react/prop-types */
-import { NavLink } from "react-router-dom";
 
-const ConversationListItem = ({ id, title, avatar, notif }) => {
+import { useDispatch } from "react-redux";
+import { selectConversation } from "../../../redux/slices/conversationSlice";
+
+const ConversationListItem = ({ id, title, avatar, notif, activeChat }) => {
+  const dispatch = useDispatch();
   return (
     <li className="w-full">
-      <NavLink
-        className="flex gap-4 justify-start w-full"
-        to={`/conversations/${id}`}
+      <div
+        className={`flex gap-4 justify-start w-full ${
+          activeChat ? "active" : ""
+        }`}
+        onClick={() => dispatch(selectConversation(id))}
       >
         <div>
           <div className="avatar online">
@@ -19,7 +24,7 @@ const ConversationListItem = ({ id, title, avatar, notif }) => {
           <h3 className="text-md w-full truncate">{title}</h3>
           <p className="text-sm font-extralight h-6 truncate w-full">{notif}</p>
         </div>
-      </NavLink>
+      </div>
     </li>
   );
 };

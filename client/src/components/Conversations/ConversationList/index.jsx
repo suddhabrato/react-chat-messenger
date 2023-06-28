@@ -10,18 +10,18 @@ const ConversationList = () => {
   const user = useSelector((state) => state.auth.user);
   const hasFetched = useSelector((state) => state.auth.completedFetch);
   const state = useSelector((state) => state.conversation);
+  const currentConversation = state.currentConversation;
 
   const conversations = useMemo(() => {
-    return state.data;
-  }, [state.data]);
+    return state.conversationsList;
+  }, [state.conversationsList]);
 
   useEffect(() => {
-    console.log(hasFetched);
     if (hasFetched) {
       if (user) dispatch(getAllConversations());
       else navigate("/");
     }
-  }, [dispatch, user, hasFetched, navigate]);
+  }, [dispatch, hasFetched, user, navigate]);
 
   const getAvatar = (conversation) => {
     if (conversation.type === "Group") return conversation.avatar;
@@ -64,6 +64,7 @@ const ConversationList = () => {
           avatar={getAvatar(conversation)}
           title={getTitle(conversation)}
           notif={getNotif(conversation)}
+          activeChat={conversation._id === currentConversation}
         />
       ))}
     </ul>
