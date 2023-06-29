@@ -26,3 +26,16 @@ export const getAllMessages = createAsyncThunk(
     }
   }
 );
+
+export const createNewMessage = createAsyncThunk(
+  "createNewMessage",
+  async ({ data }) => {
+    try {
+      const res = await api.post("/conversations/newMessage", data);
+      console.log(res.data?.savedMessage);
+      return res.data?.savedMessage;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+);

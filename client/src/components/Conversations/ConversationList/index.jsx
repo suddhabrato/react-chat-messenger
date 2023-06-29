@@ -10,7 +10,6 @@ const ConversationList = () => {
   const user = useSelector((state) => state.auth.user);
   const hasFetched = useSelector((state) => state.auth.completedFetch);
   const state = useSelector((state) => state.conversation);
-  const currentConversation = state.currentConversation;
 
   const conversations = useMemo(() => {
     return state.conversationsList;
@@ -23,36 +22,6 @@ const ConversationList = () => {
     }
   }, [dispatch, hasFetched, user, navigate]);
 
-  const getAvatar = (conversation) => {
-    if (conversation.type === "Group") return conversation.avatar;
-
-    const otherParticipant = conversation.participants.find(
-      (participant) => participant._id != user._id
-    );
-
-    return otherParticipant.avatar;
-  };
-
-  const getTitle = (conversation) => {
-    if (conversation.type === "Group") return conversation.title;
-
-    const otherParticipant = conversation.participants.find(
-      (participant) => participant._id != user._id
-    );
-
-    return otherParticipant.displayname;
-  };
-
-  const getNotif = (conversation) => {
-    if (conversation.messages.length === 0) return "No messages yet";
-
-    const message = conversation.messages[0];
-    if (message.author._id === user._id) return `You: ${message.text}`;
-    else if (conversation.type === "Group")
-      return `${message.author.displayname}: ${message.text}`;
-    else return message.text;
-  };
-
   if (hasFetched && !user) return null;
 
   return (
@@ -60,11 +29,7 @@ const ConversationList = () => {
       {conversations?.map((conversation) => (
         <ConversationListItem
           key={conversation._id}
-          id={conversation._id}
-          avatar={getAvatar(conversation)}
-          title={getTitle(conversation)}
-          notif={getNotif(conversation)}
-          activeChat={conversation._id === currentConversation}
+          conversation={conversation}
         />
       ))}
     </ul>

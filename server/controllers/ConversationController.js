@@ -79,6 +79,11 @@ const ConversationController = {
           $push: { messages: savedMessage._id },
         });
 
+        await savedMessage.populate({
+          path: "author",
+          select: "displayname avatar",
+        });
+
         res.status(201).json({ savedMessage });
       } else if (type === "Individual") {
         if (
@@ -149,6 +154,11 @@ const ConversationController = {
 
         await Conversation.findByIdAndUpdate(conversation._id, {
           $push: { messages: savedMessage._id },
+        });
+
+        await savedMessage.populate({
+          path: "author",
+          select: "displayname avatar",
         });
 
         res.status(201).json({ savedMessage });
