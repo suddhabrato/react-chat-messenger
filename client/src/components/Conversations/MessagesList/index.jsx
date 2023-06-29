@@ -7,6 +7,8 @@ import {
   lookUpConversationByParticipants,
 } from "../../../redux/actions/conversationActions";
 import Loader from "../../Loader";
+import EmptyState from "../../EmptyState";
+import placeholder from "../../../assets/EmptyChat_placeholder.svg";
 
 const MessagesList = () => {
   const dispatch = useDispatch();
@@ -46,7 +48,14 @@ const MessagesList = () => {
   }, [messages]);
 
   if (isLoading && conversation) return <Loader />;
-
+  if (!isLoading && conversation && messages.length === 0)
+    return (
+      <EmptyState
+        title="Seems quite in here"
+        subtitle="Start a conversation"
+        image={placeholder}
+      />
+    );
   return (
     <div className="bg-base-200 w-full h-full p-4 lg:p-6 overflow-y-auto">
       {messages.map((message) => {

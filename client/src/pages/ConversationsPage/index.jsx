@@ -6,6 +6,8 @@ import Loader from "../../components/Loader";
 import { useEffect } from "react";
 import { clearCurrentConversation } from "../../redux/slices/conversationSlice";
 import UserSearchModal from "../../components/Conversations/UserSearchModal";
+import EmptyState from "../../components/EmptyState";
+import placeholder from "../../assets/conversationEmptyState.svg";
 
 // eslint-disable-next-line react/prop-types
 const ConversationsPage = () => {
@@ -48,7 +50,18 @@ const ConversationsPage = () => {
         <>
           <ConversationListPanel />
           <div className="flex bg-base-100 w-full lg:w-2/3 flex-col h-full p-2">
-            {chatOpen && <MessageListPanel />}
+            {chatOpen ? (
+              <MessageListPanel />
+            ) : (
+              <div className="flex flex-col w-full h-full bg-base-200 lg:rounded-2xl overflow-hidden">
+                <EmptyState
+                  title="React Chat Messenger"
+                  subtitle="Real-time chat messaging app for users around the world"
+                  image={placeholder}
+                  large
+                />
+              </div>
+            )}
           </div>
         </>
       ) : (

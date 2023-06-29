@@ -11,6 +11,7 @@ export const conversationSlice = createSlice({
   initialState: {
     conversationsList: [],
     currentConversation: null,
+    isLoadingConversations: false,
     isLoading: false,
     hasError: false,
     messages: [],
@@ -52,19 +53,19 @@ export const conversationSlice = createSlice({
     //GETTING ALL CONVERSATIONS OF USER
 
     builder.addCase(getAllConversations.pending, (state) => {
-      state.isLoading = true;
+      state.isLoadingConversations = true;
       state.messages = [];
     });
 
     builder.addCase(getAllConversations.fulfilled, (state, { payload }) => {
-      state.isLoading = false;
+      state.isLoadingConversations = false;
       state.hasError = false;
       state.conversationsList = payload;
       state.messages = [];
     });
 
     builder.addCase(getAllConversations.rejected, (state) => {
-      state.isLoading = false;
+      state.isLoadingConversations = false;
       state.hasError = true;
       state.messages = [];
     });

@@ -64,7 +64,6 @@ const MessageInput = () => {
       </button>
 
       <input
-        autoFocus
         type="text"
         placeholder="Type a message"
         ref={inputRef}
