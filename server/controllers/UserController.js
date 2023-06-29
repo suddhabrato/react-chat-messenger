@@ -4,7 +4,18 @@ const UserController = {
   searchUser: async (req, res) => {
     try {
       const users = await User.find({
-        username: { $regex: req.query.username },
+        $and: [
+          {
+            $or: [
+              { username: { $regex: new RegExp(req.query.searchTerm, "i") } },
+              {
+                displayname: { $regex: new RegExp(req.query.searchTerm, "i") },
+              },
+              { email: { $regex: new RegExp(req.query.searchTerm, "i") } },
+            ],
+          },
+          { _id: { $ne: req.user._id } },
+        ],
       })
         .limit(10)
         .select("displayname username avatar");

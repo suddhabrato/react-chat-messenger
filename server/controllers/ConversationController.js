@@ -24,6 +24,45 @@ const ConversationController = {
     }
   },
 
+  getConversationByParticpantLookup: async (req, res) => {
+    try {
+      const { recipients } = req.body;
+
+      const searchParticipants = recipients.map(
+        (id) => new mongoose.Types.ObjectId(id)
+      );
+
+      if (!recipients.includes(req.user._id.toString()))
+        recipients.push(req.user._id);
+
+      const lookedUpConversation = await Conversation.findOne({
+        $and: [
+          { _id: { $in: req.user.conversations } },
+          { type: "Individual" },
+          {
+            $expr: {
+              $eq: [
+                { $setEquals: ["$participants", searchParticipants] },
+                true,
+              ],
+            },
+          },
+        ],
+      })
+        .populate("participants")
+        .populate({
+          path: "messages",
+          options: { sort: { createdAt: -1 } },
+          populate: { path: "author", select: "displayname" },
+          perDocumentLimit: 1,
+        });
+
+      res.json(lookedUpConversation);
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+
   getMessages: async (req, res) => {
     try {
       const { convId } = req.params;

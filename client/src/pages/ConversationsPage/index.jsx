@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Loader from "../../components/Loader";
 import { useEffect } from "react";
 import { clearCurrentConversation } from "../../redux/slices/conversationSlice";
+import UserSearchModal from "../../components/Conversations/UserSearchModal";
 
 // eslint-disable-next-line react/prop-types
 const ConversationsPage = () => {
@@ -42,6 +43,7 @@ const ConversationsPage = () => {
 
   return (
     <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100dvh-4rem)]">
+      <UserSearchModal />
       {isDesktop ? (
         <>
           <ConversationListPanel />

@@ -7,6 +7,12 @@ router.get("/", authMiddleware, ConversationController.getConversations);
 router.get("/:convId", authMiddleware, ConversationController.getMessages);
 
 router.post(
+  "/lookup",
+  authMiddleware,
+  ConversationController.getConversationByParticpantLookup
+);
+
+router.post(
   "/newMessage",
   authMiddleware,
   ConversationController.createMessage

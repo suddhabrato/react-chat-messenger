@@ -3,6 +3,7 @@ import {
   createNewMessage,
   getAllConversations,
   getAllMessages,
+  lookUpConversationByParticipants,
 } from "../actions/conversationActions";
 
 export const conversationSlice = createSlice({
@@ -15,8 +16,14 @@ export const conversationSlice = createSlice({
     messages: [],
     newMessageText: "",
     sendingMessage: false,
+    creatingNewConversation: false,
   },
   reducers: {
+    setCreatingNewConversation: (state, { payload }) => {
+      state.creatingNewConversation = true;
+      state.currentConversation = payload;
+      state.messages = [];
+    },
     setMessageText: (state, { payload }) => {
       state.newMessageText = payload;
     },
@@ -30,6 +37,7 @@ export const conversationSlice = createSlice({
       state.sendingMessage = false;
       state.messages = [];
       state.newMessageText = "";
+      state.creatingNewConversation = false;
     },
     clearConversations: (state) => {
       state.conversationsList = [];
@@ -37,6 +45,7 @@ export const conversationSlice = createSlice({
       state.currentConversation = null;
       state.sendingMessage = false;
       state.newMessageText = "";
+      state.creatingNewConversation = false;
     },
   },
   extraReducers: (builder) => {
@@ -95,12 +104,38 @@ export const conversationSlice = createSlice({
       state.hasError = false;
       state.newMessageText = "";
       state.messages = [...state.messages, payload];
+      state.creatingNewConversation = false;
     });
 
     builder.addCase(createNewMessage.rejected, (state) => {
       state.sendingMessage = false;
       state.newMessageText = "";
       state.hasError = true;
+    });
+
+    //LOOKING UP CONVERSATION BY PARTICIPANTS
+    builder.addCase(lookUpConversationByParticipants.pending, (state) => {
+      state.isLoading = true;
+      state.messages = [];
+      state.sendingMessage = false;
+    });
+
+    builder.addCase(
+      lookUpConversationByParticipants.fulfilled,
+      (state, { payload }) => {
+        state.isLoading = false;
+        state.hasError = false;
+        if (payload) state.currentConversation = payload;
+        state.messages = [];
+        state.sendingMessage = false;
+      }
+    );
+
+    builder.addCase(lookUpConversationByParticipants.rejected, (state) => {
+      state.isLoading = false;
+      state.hasError = true;
+      state.messages = [];
+      state.sendingMessage = false;
     });
   },
 });
@@ -110,6 +145,7 @@ export const {
   selectConversation,
   clearCurrentConversation,
   setMessageText,
+  setCreatingNewConversation,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

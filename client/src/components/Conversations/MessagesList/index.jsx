@@ -2,7 +2,10 @@ import { useDispatch, useSelector } from "react-redux";
 import MessageImage from "./MessageImage";
 import MessageText from "./MessageText";
 import { useEffect, useRef } from "react";
-import { getAllMessages } from "../../../redux/actions/conversationActions";
+import {
+  getAllMessages,
+  lookUpConversationByParticipants,
+} from "../../../redux/actions/conversationActions";
 import Loader from "../../Loader";
 
 const MessagesList = () => {
@@ -17,7 +20,20 @@ const MessagesList = () => {
   const messageListRef = useRef(null);
 
   useEffect(() => {
-    if (conversation) dispatch(getAllMessages({ id: conversation._id }));
+    if (conversation) {
+      if (conversation._id) dispatch(getAllMessages({ id: conversation._id }));
+      else if (
+        conversation.participants &&
+        conversation?.participants?.length > 0
+      )
+        dispatch(
+          lookUpConversationByParticipants({
+            participants: conversation.participants.map(
+              (participant) => participant._id
+            ),
+          })
+        );
+    }
   }, [conversation, dispatch]);
 
   useEffect(() => {

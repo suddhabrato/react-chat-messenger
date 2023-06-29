@@ -1,6 +1,22 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/axios";
 
+export const lookUpConversationByParticipants = createAsyncThunk(
+  "lookUpConversationByParticipants",
+  async ({ participants }) => {
+    try {
+      const res = await api.post("/conversations/lookup", {
+        recipients: participants,
+      });
+      console.log(res.data);
+
+      return res.data;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+);
+
 export const getAllConversations = createAsyncThunk(
   "getAllConversations",
   async () => {

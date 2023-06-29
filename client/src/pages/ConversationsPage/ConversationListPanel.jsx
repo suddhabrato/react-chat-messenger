@@ -1,11 +1,12 @@
 import ConversationList from "../../components/Conversations/ConversationList";
+import { showModal } from "../../components/Conversations/UserSearchModal";
 
 const ConversationListPanel = () => {
   return (
     <div className="flex bg-base-100 w-full lg:w-1/3 lg:max-w-md flex-col h-full p-2">
       <h2 className="text-3xl font-semibold mx-2 mt-2">Conversations</h2>
       <div className="flex justify-center w-full mt-6 mb-4 mx-2">
-        <button>
+        <button onClick={showModal}>
           <svg
             className="w-6 h-6"
             fill="none"

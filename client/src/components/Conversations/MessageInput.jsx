@@ -25,7 +25,7 @@ const MessageInput = () => {
 
   useEffect(() => {
     if (!isSubmitting && inputRef.current) inputRef.current.focus();
-  }, [isSubmitting]);
+  }, [isSubmitting, currentConversation]);
 
   const handleSubmit = () => {
     if (!messageText.trim()) return console.log("Empty Message");
