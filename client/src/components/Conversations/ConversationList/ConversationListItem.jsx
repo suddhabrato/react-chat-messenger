@@ -34,10 +34,23 @@ const ConversationListItem = ({ conversation }) => {
     if (conversation.messages.length === 0) return "No messages yet";
 
     const message = conversation.messages[0];
-    if (message.author._id === user._id) return `You: ${message.text}`;
-    else if (conversation.type === "Group")
-      return `${message.author.displayname}: ${message.text}`;
-    else return message.text;
+    if (message.text) {
+      if (message.author._id === user._id) return `You: ${message.text}`;
+      else if (conversation.type === "Group")
+        return `${message.author.displayname}: ${message.text}`;
+      else return message.text;
+    } else if (message.media?.length > 0) {
+      if (message.author._id === user._id)
+        return `You sent ${message.media.length} photos`;
+      else if (conversation.type === "Group")
+        return `${message.author.displayname} sent ${message.media.length} ${
+          message.media.length === 1 ? "photo" : "photos"
+        }`;
+      else
+        return `${message.media.length} ${
+          message.media.length === 1 ? "photo" : "photos"
+        }`;
+    }
   };
 
   if (!conversation || !user) return null;

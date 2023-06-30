@@ -50,13 +50,13 @@ const ConversationsPage = () => {
 
   if (isLoading || (!user && !hasFetched))
     return (
-      <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100vh-4rem)]">
+      <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100dvh-4rem)]">
         <Loader />
       </div>
     );
 
   return (
-    <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100vh-4rem)]">
+    <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100dvh-4rem)]">
       <UserSearchModal />
       {isDesktop ? (
         <>
