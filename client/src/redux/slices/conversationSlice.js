@@ -104,7 +104,7 @@ export const conversationSlice = createSlice({
       state.sendingMessage = false;
       state.hasError = false;
       state.newMessageText = "";
-      state.messages = [...state.messages, payload];
+      if (payload) state.messages = [...state.messages, payload];
       state.creatingNewConversation = false;
     });
 

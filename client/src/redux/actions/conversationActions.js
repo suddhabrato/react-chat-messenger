@@ -65,11 +65,12 @@ export const uploadImages = async (selectedFiles) => {
 
     const formData = new FormData();
     const images = selectedFiles;
-
+    console.log(CLOUD_NAME, images);
     let uploadedImages = [];
 
     for (let i = 0; i < images.length; i++) {
       const file = images[i];
+      console.log(file);
       if (file.file.camera) formData.append("file", file.file.camera);
       else formData.append(`file`, file.file);
       formData.append(`upload_preset`, "jtvaaajn");
