@@ -7,7 +7,8 @@ import { useEffect } from "react";
 import { clearCurrentConversation } from "../../redux/slices/conversationSlice";
 import UserSearchModal from "../../components/Conversations/UserSearchModal";
 import EmptyState from "../../components/EmptyState";
-import placeholder from "../../assets/conversationEmptyState.svg";
+import placeholder from "../../assets/ConversationEmptyState.svg";
+import { closeSearchModal } from "../../redux/slices/userSlice";
 
 // eslint-disable-next-line react/prop-types
 const ConversationsPage = () => {
@@ -20,11 +21,13 @@ const ConversationsPage = () => {
   const chatOpen = useSelector(
     (state) => state.conversation.currentConversation
   );
+  const isSearchModalOpen = useSelector((state) => state.user.searchModalOpen);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.keyCode === 27) {
-        dispatch(clearCurrentConversation());
+        if (!isSearchModalOpen) dispatch(clearCurrentConversation());
+        else dispatch(closeSearchModal());
       }
     };
 
@@ -34,17 +37,17 @@ const ConversationsPage = () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isSearchModalOpen]);
 
   if (isLoading || (!user && !hasFetched))
     return (
-      <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100dvh-4rem)]">
+      <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100svh-4rem)]">
         <Loader />
       </div>
     );
 
   return (
-    <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100dvh-4rem)]">
+    <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100svh-4rem)]">
       <UserSearchModal />
       {isDesktop ? (
         <>

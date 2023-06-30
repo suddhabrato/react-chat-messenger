@@ -22,7 +22,7 @@ const MessageImage = ({
       </div>
       <div className="chat-bubble w-min">
         <img
-          className="object-cover rounded-xl max-w-[50vw] max-h-[40lvh] my-2"
+          className="object-cover rounded-xl max-w-[50vw] max-h-[40svh] my-2"
           src={image}
         />
         <div className="flex break-all">{body}</div>

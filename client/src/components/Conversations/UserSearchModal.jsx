@@ -1,5 +1,9 @@
 import { useDispatch, useSelector } from "react-redux";
-import { clearSearch, setSearchText } from "../../redux/slices/userSlice";
+import {
+  clearSearch,
+  closeSearchModal,
+  setSearchText,
+} from "../../redux/slices/userSlice";
 import { useEffect, useRef, useState } from "react";
 import { getSearchUsers } from "../../redux/actions/userActions";
 import UserSearchItem from "./UserSearchItem";
@@ -15,12 +19,14 @@ const UserSearchModal = () => {
   const searchText = useSelector((state) => state.user.searchText);
   const [searchTimeout, setSearchTimeout] = useState(null);
   const searchResults = useSelector((state) => state.user.searchResults);
+  const isSearchModalOpen = useSelector((state) => state.user.searchModalOpen);
 
   useEffect(() => {
     dispatch(clearSearch());
-    if (searchRef.current && searchRef.current) searchRef.current.focus();
+    if (searchRef.current && searchRef.current && isSearchModalOpen)
+      searchRef.current.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [isSearchModalOpen]);
 
   const handleSearchChange = (e) => {
     dispatch(setSearchText(e.target.value));
@@ -41,7 +47,10 @@ const UserSearchModal = () => {
   return (
     <dialog id="new_message_modal" className="modal">
       <form method="dialog" className="modal-box max-h-[60vh]">
-        <button className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2">
+        <button
+          className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
+          onClick={() => dispatch(closeSearchModal())}
+        >
           ✕
         </button>
         <h3 className="font-bold text-lg">Create new conversation</h3>
@@ -54,6 +63,7 @@ const UserSearchModal = () => {
 
         <div className="join w-full">
           <input
+            autoFocus
             ref={searchRef}
             className="input input-bordered join-item w-full text-sm focus:outline-none"
             placeholder="Search by username, profile name or email..."
@@ -77,7 +87,7 @@ const UserSearchModal = () => {
         )}
       </form>
       <form method="dialog" className="modal-backdrop">
-        <button>close</button>
+        <button onClick={() => dispatch(closeSearchModal())}>close</button>
       </form>
     </dialog>
   );

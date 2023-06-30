@@ -2,7 +2,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { createNewMessage } from "../../redux/actions/conversationActions";
 import { setMessageText } from "../../redux/slices/conversationSlice";
 import { useEffect, useRef } from "react";
+import useMediaQuery from "../../hooks/useMediaQuery";
 const MessageInput = () => {
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const inputRef = useRef(null);
   const dispatch = useDispatch();
   const isSubmitting = useSelector(
@@ -11,6 +13,7 @@ const MessageInput = () => {
   const currentConversation = useSelector(
     (state) => state.conversation.currentConversation
   );
+  const isLoading = useSelector((state) => state.conversation.isLoading);
   const messageText = useSelector((state) => state.conversation.newMessageText);
 
   const handleKeyDown = (event) => {
@@ -24,8 +27,9 @@ const MessageInput = () => {
   };
 
   useEffect(() => {
-    if (!isSubmitting && inputRef.current) inputRef.current.focus();
-  }, [isSubmitting, currentConversation]);
+    if (!isSubmitting && inputRef.current && isDesktop)
+      inputRef.current.focus();
+  }, [isSubmitting, currentConversation, isLoading, isDesktop]);
 
   const handleSubmit = () => {
     if (!messageText.trim()) return console.log("Empty Message");
@@ -64,6 +68,7 @@ const MessageInput = () => {
       </button>
 
       <input
+        autoFocus
         type="text"
         placeholder="Type a message"
         ref={inputRef}

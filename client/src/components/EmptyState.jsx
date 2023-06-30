@@ -4,7 +4,7 @@ const EmptyState = ({ title, subtitle, image, large }) => {
       <div className="flex flex-col items-center w-full">
         {image && (
           <img
-            className={`${large ? "w-96" : "w-52"} opacity-90 object-cover`}
+            className={`${large ? "w-96" : "w-52"} object-cover`}
             src={image}
           />
         )}

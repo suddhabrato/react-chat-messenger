@@ -5,19 +5,32 @@ const initialState = {
   searchText: "",
   searchResults: [],
   isLoading: false,
+  searchModalOpen: false,
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    openSearchModal: (state) => {
+      state.searchModalOpen = true;
+      state.searchText = "";
+      state.searchResults = [];
+      state.isLoading = false;
+    },
+    closeSearchModal: (state) => {
+      state.searchModalOpen = false;
+      state.searchText = "";
+      state.searchResults = [];
+      state.isLoading = false;
+    },
     setSearchText: (state, { payload }) => {
       state.searchText = payload;
     },
     clearSearch: (state) => {
-      (state.searchText = ""),
-        (state.searchResults = []),
-        (state.isLoading = false);
+      state.searchText = "";
+      state.searchResults = [];
+      state.isLoading = false;
     },
   },
   extraReducers: (builder) => {
@@ -37,6 +50,7 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setSearchText, clearSearch } = userSlice.actions;
+export const { setSearchText, clearSearch, closeSearchModal, openSearchModal } =
+  userSlice.actions;
 
 export default userSlice.reducer;
