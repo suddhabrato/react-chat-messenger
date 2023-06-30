@@ -4,6 +4,7 @@ import { signInWithGoogle } from "../../redux/actions/authActions";
 
 const LoginPage = () => {
   const user = useSelector((state) => state.auth.user);
+  const hasFetched = useSelector((state) => state.auth.completedFetch);
 
   return (
     <div
@@ -23,7 +24,7 @@ const LoginPage = () => {
             excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
             a id nisi.
           </p>
-          {!user ? (
+          {!user && hasFetched ? (
             <button
               className="btn btn-outline btn-wide text-white"
               onClick={signInWithGoogle}
@@ -49,11 +50,13 @@ const LoginPage = () => {
               Login with Google
             </button>
           ) : (
-            <Link to="/conversations">
-              <button className="btn btn-success btn-outline btn-wide">
-                Go to conversations
-              </button>
-            </Link>
+            hasFetched && (
+              <Link to="/conversations">
+                <button className="btn btn-success btn-outline btn-wide">
+                  Go to conversations
+                </button>
+              </Link>
+            )
           )}
         </div>
       </div>

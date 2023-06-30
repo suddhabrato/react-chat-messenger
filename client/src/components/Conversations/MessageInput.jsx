@@ -70,6 +70,7 @@ const MessageInput = () => {
       let uploadedImages = [];
       if (selectedFiles.length > 0) {
         uploadedImages = await uploadImages(selectedFiles);
+        console.log(uploadedImages);
         setSelectedFiles([]);
       }
       const body = {
@@ -108,7 +109,6 @@ const MessageInput = () => {
           disabled={isSubmitting}
           accept="image/*"
           multiple
-          capture="user"
           type="file"
           ref={mediaUploadRef}
           className="hidden"

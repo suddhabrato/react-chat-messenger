@@ -83,7 +83,7 @@ export const uploadImages = async (selectedFiles) => {
           },
         }
       );
-
+      console.log(response.data);
       if (response.status === 200) {
         const resource = response.data;
 
