@@ -96,6 +96,7 @@ export const uploadImages = async (selectedFiles) => {
 
     return uploadedImages;
   } catch (err) {
+    alert(err);
     console.log("Error uploading files to Cloudinary:", err);
   }
 };

@@ -108,6 +108,7 @@ const MessageInput = () => {
           disabled={isSubmitting}
           accept="image/*"
           multiple
+          capture="user"
           type="file"
           ref={mediaUploadRef}
           className="hidden"

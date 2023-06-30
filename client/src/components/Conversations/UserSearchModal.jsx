@@ -63,7 +63,6 @@ const UserSearchModal = () => {
 
         <div className="join w-full">
           <input
-            autoFocus
             ref={searchRef}
             className="input input-bordered join-item w-full text-sm focus:outline-none"
             placeholder="Search by username, profile name or email..."
