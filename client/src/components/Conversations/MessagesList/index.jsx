@@ -8,7 +8,7 @@ import {
 } from "../../../redux/actions/conversationActions";
 import Loader from "../../Loader";
 import EmptyState from "../../EmptyState";
-import placeholder from "../../../assets/EmptyChat_placeholder.svg";
+import placeholder from "../../../assets/EmptyChat_Placeholder.svg";
 
 const MessagesList = () => {
   const dispatch = useDispatch();
