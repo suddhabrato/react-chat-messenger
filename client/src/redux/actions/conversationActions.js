@@ -1,5 +1,6 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/axios";
+import axios from "axios";
 
 export const lookUpConversationByParticipants = createAsyncThunk(
   "lookUpConversationByParticipants",
@@ -55,3 +56,46 @@ export const createNewMessage = createAsyncThunk(
     }
   }
 );
+
+export const uploadImages = async (selectedFiles) => {
+  try {
+    const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME;
+
+    if (!CLOUD_NAME) return;
+
+    const formData = new FormData();
+    const images = selectedFiles;
+
+    let uploadedImages = [];
+
+    for (let i = 0; i < images.length; i++) {
+      const file = images[i];
+
+      formData.append(`file`, file.file);
+      formData.append(`upload_preset`, "jtvaaajn");
+
+      const response = await axios.post(
+        `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/upload`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+          },
+        }
+      );
+
+      if (response.status === 200) {
+        const resource = response.data;
+
+        uploadedImages.push({
+          imageUrl: resource.secure_url,
+          publicId: resource.public_id,
+        });
+      }
+    }
+
+    return uploadedImages;
+  } catch (err) {
+    console.log("Error uploading files to Cloudinary:", err);
+  }
+};

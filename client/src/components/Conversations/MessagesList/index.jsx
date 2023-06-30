@@ -63,7 +63,12 @@ const MessagesList = () => {
           return (
             <MessageImage
               key={message._id}
-              author={message.author?.displayname}
+              author={
+                message.author._id === user._id
+                  ? "You"
+                  : message.author.displayname
+              }
+              images={message?.media}
               avatar={message.author?.avatar}
               body={message?.text}
               sentTime={message?.createdAt}

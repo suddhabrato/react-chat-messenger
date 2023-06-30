@@ -9,11 +9,13 @@ import UserSearchModal from "../../components/Conversations/UserSearchModal";
 import EmptyState from "../../components/EmptyState";
 import placeholder from "../../assets/ConversationEmptyState.svg";
 import { closeSearchModal } from "../../redux/slices/userSlice";
+import { getAllConversations } from "../../redux/actions/conversationActions";
+import { useNavigate } from "react-router";
 
 // eslint-disable-next-line react/prop-types
 const ConversationsPage = () => {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
-
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const hasFetched = useSelector((state) => state.auth.completedFetch);
@@ -22,6 +24,13 @@ const ConversationsPage = () => {
     (state) => state.conversation.currentConversation
   );
   const isSearchModalOpen = useSelector((state) => state.user.searchModalOpen);
+
+  useEffect(() => {
+    if (hasFetched) {
+      if (user) dispatch(getAllConversations());
+      else navigate("/");
+    }
+  }, [dispatch, hasFetched, user, navigate]);
 
   useEffect(() => {
     const handleKeyPress = (event) => {
@@ -41,13 +50,13 @@ const ConversationsPage = () => {
 
   if (isLoading || (!user && !hasFetched))
     return (
-      <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100svh-4rem)]">
+      <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100vh-4rem)]">
         <Loader />
       </div>
     );
 
   return (
-    <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100svh-4rem)]">
+    <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100vh-4rem)]">
       <UserSearchModal />
       {isDesktop ? (
         <>

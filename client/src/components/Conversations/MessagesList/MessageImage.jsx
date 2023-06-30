@@ -1,14 +1,15 @@
-import React from "react";
-
+/* eslint-disable react/prop-types */
+const options = { hour: "2-digit", minute: "2-digit" };
 const MessageImage = ({
   body,
-  image,
+  images,
   author,
   seenTime,
   avatar,
   sentTime,
   self,
 }) => {
+  const createdAt = new Date(sentTime).toLocaleTimeString("en-US", options);
   return (
     <div className={`chat ${self ? "chat-end" : "chat-start"}`}>
       <div className="chat-image avatar">
@@ -17,17 +18,22 @@ const MessageImage = ({
         </div>
       </div>
       <div className="chat-header">
-        {author}
-        <time className="text-xs opacity-50">{sentTime}</time>
+        {author + " "}
+        <time className="text-xs opacity-50">{createdAt}</time>
       </div>
       <div className="chat-bubble w-min">
-        <img
-          className="object-cover rounded-xl max-w-[50vw] max-h-[40svh] my-2"
-          src={image}
-        />
+        {images?.map((image) => (
+          <img
+            key={image.publicId}
+            className="object-cover rounded-xl max-w-[50vw] max-h-[40vh] my-2"
+            src={image.imageUrl}
+          />
+        ))}
         <div className="flex break-all">{body}</div>
       </div>
-      <div className="chat-footer opacity-50">Seen at {seenTime}</div>
+      {seenTime && (
+        <div className="chat-footer opacity-50">Seen at {seenTime}</div>
+      )}
     </div>
   );
 };

@@ -1,11 +1,17 @@
 import { useDispatch, useSelector } from "react-redux";
-import { createNewMessage } from "../../redux/actions/conversationActions";
+import {
+  createNewMessage,
+  uploadImages,
+} from "../../redux/actions/conversationActions";
 import { setMessageText } from "../../redux/slices/conversationSlice";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import useMediaQuery from "../../hooks/useMediaQuery";
+import ImageUploadCarousel from "./ImageUploadCarousel";
+
 const MessageInput = () => {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
   const inputRef = useRef(null);
+  const mediaUploadRef = useRef(null);
   const dispatch = useDispatch();
   const isSubmitting = useSelector(
     (state) => state.conversation.sendingMessage
@@ -15,6 +21,7 @@ const MessageInput = () => {
   );
   const isLoading = useSelector((state) => state.conversation.isLoading);
   const messageText = useSelector((state) => state.conversation.newMessageText);
+  const [selectedFiles, setSelectedFiles] = useState([]);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -26,30 +33,86 @@ const MessageInput = () => {
     dispatch(setMessageText(e.target.value));
   };
 
+  const handleFileChange = (e) => {
+    const files = e.target.files;
+    console.log(Array.from(files));
+    if (files.length > 0) {
+      const newSelectedFiles = Array.from(files).map((file) => ({
+        id: Math.random().toString(36).substring(2),
+        file: file,
+        previewUrl: URL.createObjectURL(file),
+      }));
+
+      setSelectedFiles((prevSelectedFiles) => [
+        ...prevSelectedFiles,
+        ...newSelectedFiles,
+      ]);
+    } else {
+      setSelectedFiles([]);
+    }
+  };
+
   useEffect(() => {
+    console.log("s", selectedFiles);
+  }, [selectedFiles]);
+
+  useEffect(() => {
+    setSelectedFiles([]);
+    if (mediaUploadRef.current) mediaUploadRef.current.value = null;
     if (!isSubmitting && inputRef.current && isDesktop)
       inputRef.current.focus();
-  }, [isSubmitting, currentConversation, isLoading, isDesktop]);
+  }, [isSubmitting, currentConversation, isLoading, isDesktop, mediaUploadRef]);
 
-  const handleSubmit = () => {
-    if (!messageText.trim()) return console.log("Empty Message");
+  const handleSubmit = async () => {
+    if (!messageText.trim() && selectedFiles.length === 0)
+      return console.log("Empty Message");
     if (currentConversation) {
+      let uploadedImages = [];
+      if (selectedFiles.length > 0) {
+        uploadedImages = await uploadImages(selectedFiles);
+        setSelectedFiles([]);
+      }
       const body = {
         recipients: currentConversation.participants.map(
           (participant) => participant._id
         ),
         convId: currentConversation?._id,
         text: messageText.trim(),
-        media: [],
+        media: uploadedImages,
         type: currentConversation?.type || "Individual",
       };
       dispatch(createNewMessage({ data: body }));
     }
   };
 
+  const handleCancel = (id) => {
+    setSelectedFiles((prevSelectedFiles) =>
+      prevSelectedFiles.filter((file) => file.id !== id)
+    );
+  };
+
   return (
-    <div className="w-full bg-base-300 flex p-2 items-center justify-center gap-0">
-      <button className="btn btn-ghost btn-circle">
+    <div className="w-full bg-base-300 flex p-2 items-center justify-center gap-0 relative">
+      {selectedFiles?.length > 0 && (
+        <ImageUploadCarousel
+          files={selectedFiles}
+          handleCancel={handleCancel}
+        />
+      )}
+      <button
+        disabled={isSubmitting}
+        className="btn btn-ghost btn-circle"
+        onClick={() => mediaUploadRef.current && mediaUploadRef.current.click()}
+      >
+        <input
+          disabled={isSubmitting}
+          accept="image/*"
+          multiple
+          type="file"
+          ref={mediaUploadRef}
+          className="hidden"
+          onChange={handleFileChange}
+        />
         <svg
           className="w-7 h-7"
           fill="none"
@@ -62,13 +125,13 @@ const MessageInput = () => {
           <path
             strokeLinecap="round"
             strokeLinejoin="round"
-            d="M15.182 15.182a4.5 4.5 0 01-6.364 0M21 12a9 9 0 11-18 0 9 9 0 0118 0zM9.75 9.75c0 .414-.168.75-.375.75S9 10.164 9 9.75 9.168 9 9.375 9s.375.336.375.75zm-.375 0h.008v.015h-.008V9.75zm5.625 0c0 .414-.168.75-.375.75s-.375-.336-.375-.75.168-.75.375-.75.375.336.375.75zm-.375 0h.008v.015h-.008V9.75z"
+            d="M2.25 15.75l5.159-5.159a2.25 2.25 0 013.182 0l5.159 5.159m-1.5-1.5l1.409-1.409a2.25 2.25 0 013.182 0l2.909 2.909m-18 3.75h16.5a1.5 1.5 0 001.5-1.5V6a1.5 1.5 0 00-1.5-1.5H3.75A1.5 1.5 0 002.25 6v12a1.5 1.5 0 001.5 1.5zm10.5-11.25h.008v.008h-.008V8.25zm.375 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z"
           />
         </svg>
       </button>
 
       <input
-        autoFocus
+        autoFocus={isDesktop}
         type="text"
         placeholder="Type a message"
         ref={inputRef}

@@ -1,14 +1,10 @@
-import { useEffect, useMemo } from "react";
+import { useMemo } from "react";
 import ConversationListItem from "./ConversationListItem";
-import { useDispatch, useSelector } from "react-redux";
-import { getAllConversations } from "../../../redux/actions/conversationActions";
-import { useNavigate } from "react-router-dom";
+import { useSelector } from "react-redux";
 import EmptyState from "../../EmptyState";
 import Loader from "../../Loader";
 
 const ConversationList = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
   const hasFetched = useSelector((state) => state.auth.completedFetch);
   const isLoading = useSelector(
@@ -19,13 +15,6 @@ const ConversationList = () => {
   const conversations = useMemo(() => {
     return state.conversationsList;
   }, [state.conversationsList]);
-
-  useEffect(() => {
-    if (hasFetched) {
-      if (user) dispatch(getAllConversations());
-      else navigate("/");
-    }
-  }, [dispatch, hasFetched, user, navigate]);
 
   if (hasFetched && !user) return null;
 

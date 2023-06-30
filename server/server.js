@@ -21,6 +21,11 @@ io.on("connection", (socket) => {
   SocketServer(socket);
 });
 
+//dummy route for keeping API UP
+app.get("/test", async (req, res) => {
+  res.send("Server up & running");
+});
+
 app.use("/api/v1/user/", require("./routes/UserRouter"));
 app.use("/api/v1/conversations", require("./routes/ConversationRouter"));
 
