@@ -1,6 +1,7 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
   createNewMessage,
+  deleteMessage,
   getAllConversations,
   getAllMessages,
   lookUpConversationByParticipants,
@@ -137,6 +138,23 @@ export const conversationSlice = createSlice({
       state.hasError = true;
       state.messages = [];
       state.sendingMessage = false;
+    });
+
+    //DELETING MESSAGE BY ID
+    builder.addCase(deleteMessage.pending, (state) => {
+      state.hasError = false;
+    });
+
+    builder.addCase(deleteMessage.fulfilled, (state, { payload }) => {
+      state.hasError = false;
+      if (payload)
+        state.messages = state.messages.filter(
+          (message) => message._id !== payload
+        );
+    });
+
+    builder.addCase(deleteMessage.rejected, (state) => {
+      state.hasError = true;
     });
   },
 });

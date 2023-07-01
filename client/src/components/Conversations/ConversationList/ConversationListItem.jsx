@@ -41,7 +41,9 @@ const ConversationListItem = ({ conversation }) => {
       else return message.text;
     } else if (message.media?.length > 0) {
       if (message.author._id === user._id)
-        return `You sent ${message.media.length} photos`;
+        return `You sent ${message.media.length} ${
+          message.media.length === 1 ? "photo" : "photos"
+        }`;
       else if (conversation.type === "Group")
         return `${message.author.displayname} sent ${message.media.length} ${
           message.media.length === 1 ? "photo" : "photos"

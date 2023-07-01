@@ -46,9 +46,26 @@ export const getAllMessages = createAsyncThunk(
 
 export const createNewMessage = createAsyncThunk(
   "createNewMessage",
-  async ({ data }) => {
+  async (data) => {
     try {
-      const res = await api.post("/conversations/newMessage", data);
+      const { recipients, media, convId, text, type } = data;
+
+      let uploadedImages = [];
+
+      if (media.length > 0) {
+        uploadedImages = await uploadImages(media);
+      }
+
+      const body = {
+        recipients,
+        convId,
+        text,
+        media: uploadedImages,
+        type,
+      };
+
+      const res = await api.post("/conversations/newMessage", body);
+
       console.log(res.data?.savedMessage);
       return res.data?.savedMessage;
     } catch (err) {
@@ -57,7 +74,7 @@ export const createNewMessage = createAsyncThunk(
   }
 );
 
-export const uploadImages = async (selectedFiles) => {
+const uploadImages = async (selectedFiles) => {
   try {
     const CLOUD_NAME = import.meta.env.VITE_CLOUD_NAME;
 
@@ -65,12 +82,12 @@ export const uploadImages = async (selectedFiles) => {
 
     const formData = new FormData();
     const images = selectedFiles;
-    console.log(CLOUD_NAME, images);
+
     let uploadedImages = [];
 
     for (let i = 0; i < images.length; i++) {
       const file = images[i];
-      console.log(file);
+
       if (file.file.camera) formData.append("file", file.file.camera);
       else formData.append(`file`, file.file);
       formData.append(`upload_preset`, "jtvaaajn");
@@ -84,7 +101,7 @@ export const uploadImages = async (selectedFiles) => {
           },
         }
       );
-      console.log(response.data);
+
       if (response.status === 200) {
         const resource = response.data;
 
@@ -97,7 +114,17 @@ export const uploadImages = async (selectedFiles) => {
 
     return uploadedImages;
   } catch (err) {
-    alert(err);
     console.log("Error uploading files to Cloudinary:", err);
   }
 };
+
+export const deleteMessage = createAsyncThunk("deleteMessage", async (id) => {
+  try {
+    if (!id) return;
+    const res = await api.delete(`/conversations/message/${id}`);
+    console.log(res.data);
+    return id;
+  } catch (err) {
+    console.error(err);
+  }
+});

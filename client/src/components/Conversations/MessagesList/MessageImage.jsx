@@ -1,6 +1,10 @@
 /* eslint-disable react/prop-types */
+
+import MessageControlDropdown from "../MessageControlDropdown";
+
 const options = { hour: "2-digit", minute: "2-digit" };
 const MessageImage = ({
+  id,
   body,
   images,
   author,
@@ -11,7 +15,7 @@ const MessageImage = ({
 }) => {
   const createdAt = new Date(sentTime).toLocaleTimeString("en-US", options);
   return (
-    <div className={`chat ${self ? "chat-end" : "chat-start"}`}>
+    <div className={`chat group ${self ? "chat-end" : "chat-start"}`}>
       <div className="chat-image avatar">
         <div className="w-10 rounded-full">
           <img src={avatar} />
@@ -22,6 +26,7 @@ const MessageImage = ({
         <time className="text-xs opacity-50">{createdAt}</time>
       </div>
       <div className="chat-bubble w-min">
+        <MessageControlDropdown id={id} self={self} />
         {images?.map((image) => (
           <img
             key={image.publicId}

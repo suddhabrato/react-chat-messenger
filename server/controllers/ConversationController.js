@@ -2,6 +2,13 @@ const Conversation = require("../models/ConversationModel");
 const User = require("../models/UserModel");
 const Message = require("../models/MessageModel");
 const mongoose = require("mongoose");
+const cloudinary = require("cloudinary").v2;
+
+cloudinary.config({
+  cloud_name: process.env.CLOUD_NAME,
+  api_key: process.env.API_KEY,
+  api_secret: process.env.API_SECRET,
+});
 
 const ConversationController = {
   getConversations: async (req, res) => {
@@ -242,6 +249,50 @@ const ConversationController = {
 
       res.status(201).json({ returnedGroupConvo });
     } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+  deleteConversation: async (req, res) => {
+    try {
+      const { convId } = req.params;
+      const messages = await Conversation.findOne({
+        $and: [{ _id: convId }, { _id: { $in: req.user.conversations } }],
+      })
+        .select("messages")
+        .populate({
+          path: "messages",
+          options: { sort: { updatedAt: -1 } },
+          populate: { path: "author", select: "displayname avatar" },
+        });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+
+  deleteMessage: async (req, res) => {
+    try {
+      const { msgId } = req.params;
+      const message = await Message.findById(msgId);
+      if (!message)
+        return res.status(400).json({ msg: "Message could not be found" });
+
+      if (message.author._id.toString() !== req.user._id.toString())
+        return res.status(401).json({
+          msg: "You do not have authorization to delete this message",
+        });
+
+      if (message.media && message.media.length > 0) {
+        await Promise.all(
+          message.media.map(async (media) => {
+            await cloudinary.uploader.destroy(media.publicId);
+          })
+        );
+      }
+
+      await Message.deleteOne({ _id: msgId });
+      res.status(200).json({ msg: "Message deleted successfully" });
+    } catch (err) {
+      console.log(err);
       return res.status(500).json({ msg: err.message });
     }
   },

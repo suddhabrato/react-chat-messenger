@@ -18,7 +18,9 @@ const MessagesList = () => {
   );
   const messages = useSelector((state) => state.conversation.messages);
   const isLoading = useSelector((state) => state.conversation.isLoading);
-
+  const isSubmitting = useSelector(
+    (state) => state.conversation.sendingMessage
+  );
   const messageListRef = useRef(null);
 
   useEffect(() => {
@@ -41,11 +43,11 @@ const MessagesList = () => {
   useEffect(() => {
     //Workaround to activate scrollintoview after dom has rendered
     setTimeout(() => {
-      if (messageListRef.current) {
-        messageListRef.current.scrollIntoView({ behavior: "smooth" });
+      if (messageListRef.current && !isLoading && !isSubmitting) {
+        messageListRef.current.scrollIntoView();
       }
     }, 0);
-  }, [messages]);
+  }, [isLoading, isSubmitting]);
 
   if (isLoading && conversation) return <Loader />;
   if (!isLoading && conversation && messages.length === 0)
@@ -57,12 +59,13 @@ const MessagesList = () => {
       />
     );
   return (
-    <div className="bg-base-200 w-full h-full p-4 lg:p-6 overflow-y-auto">
+    <div className="bg-base-200 w-full h-full p-4 lg:p-6 overflow-y-auto overflow-x-hidden">
       {messages.map((message) => {
         if (message.media?.length > 0) {
           return (
             <MessageImage
               key={message._id}
+              id={message._id}
               author={
                 message.author._id === user._id
                   ? "You"
@@ -78,6 +81,7 @@ const MessagesList = () => {
         } else
           return (
             <MessageText
+              id={message._id}
               key={message._id}
               author={
                 message.author._id === user._id

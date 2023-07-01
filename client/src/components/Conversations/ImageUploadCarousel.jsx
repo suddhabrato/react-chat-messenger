@@ -1,7 +1,7 @@
 /* eslint-disable react/prop-types */
 const ImageUploadCarousel = ({ files, handleCancel }) => {
   const images = files;
-  console.log(images);
+
   return (
     <div className="w-full h-24 flex items-center bg-opacity-95 bg-base-300 absolute -top-24 overflow-x-auto p-4 border-b-2 border-neutral-300 border-opacity-70 rounded-t-2xl">
       <div className="flex items-center h-full gap-4">

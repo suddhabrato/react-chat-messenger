@@ -1,8 +1,5 @@
 import { useDispatch, useSelector } from "react-redux";
-import {
-  createNewMessage,
-  uploadImages,
-} from "../../redux/actions/conversationActions";
+import { createNewMessage } from "../../redux/actions/conversationActions";
 import { setMessageText } from "../../redux/slices/conversationSlice";
 import { useEffect, useRef, useState } from "react";
 import useMediaQuery from "../../hooks/useMediaQuery";
@@ -35,7 +32,7 @@ const MessageInput = () => {
 
   const handleFileChange = (e) => {
     const files = e.target.files;
-    console.log(Array.from(files));
+
     if (files.length > 0) {
       const newSelectedFiles = Array.from(files).map((file) => ({
         id: Math.random().toString(36).substring(2),
@@ -53,10 +50,6 @@ const MessageInput = () => {
   };
 
   useEffect(() => {
-    console.log("s", selectedFiles);
-  }, [selectedFiles]);
-
-  useEffect(() => {
     setSelectedFiles([]);
     if (mediaUploadRef.current) mediaUploadRef.current.value = null;
     if (!isSubmitting && inputRef.current && isDesktop)
@@ -67,22 +60,17 @@ const MessageInput = () => {
     if (!messageText.trim() && selectedFiles.length === 0)
       return console.log("Empty Message");
     if (currentConversation) {
-      let uploadedImages = [];
-      if (selectedFiles.length > 0) {
-        uploadedImages = await uploadImages(selectedFiles);
-        console.log(uploadedImages);
-        setSelectedFiles([]);
-      }
-      const body = {
-        recipients: currentConversation.participants.map(
-          (participant) => participant._id
-        ),
-        convId: currentConversation?._id,
-        text: messageText.trim(),
-        media: uploadedImages,
-        type: currentConversation?.type || "Individual",
-      };
-      dispatch(createNewMessage({ data: body }));
+      dispatch(
+        createNewMessage({
+          recipients: currentConversation.participants.map(
+            (participant) => participant._id
+          ),
+          convId: currentConversation?._id,
+          text: messageText.trim(),
+          media: selectedFiles,
+          type: currentConversation?.type || "Individual",
+        })
+      );
     }
   };
 
