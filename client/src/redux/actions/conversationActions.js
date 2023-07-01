@@ -44,6 +44,19 @@ export const getAllMessages = createAsyncThunk(
   }
 );
 
+export const createNewGroupConversation = createAsyncThunk(
+  "createNewGroupConversation",
+  async (data) => {
+    try {
+      const res = await api.post("/conversations/newGroupConversation", data);
+      console.log(res.data.returnedGroupConvo);
+      return res.data?.returnedGroupConvo;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+);
+
 export const createNewMessage = createAsyncThunk(
   "createNewMessage",
   async (data) => {

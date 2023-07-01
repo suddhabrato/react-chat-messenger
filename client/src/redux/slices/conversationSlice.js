@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import {
+  createNewGroupConversation,
   createNewMessage,
   deleteMessage,
   getAllConversations,
@@ -155,6 +156,29 @@ export const conversationSlice = createSlice({
 
     builder.addCase(deleteMessage.rejected, (state) => {
       state.hasError = true;
+    });
+
+    //CREATING NEW GROUP CONVERSATION
+    builder.addCase(createNewGroupConversation.pending, (state) => {
+      state.hasError = false;
+      state.creatingNewConversation = true;
+    });
+
+    builder.addCase(
+      createNewGroupConversation.fulfilled,
+      (state, { payload }) => {
+        state.hasError = false;
+        if (payload) {
+          state.conversationsList = [payload, ...state.conversationsList];
+          state.currentConversation = payload;
+        }
+        state.creatingNewConversation = false;
+      }
+    );
+
+    builder.addCase(createNewGroupConversation.rejected, (state) => {
+      state.hasError = true;
+      state.creatingNewConversation = false;
     });
   },
 });

@@ -11,6 +11,7 @@ import placeholder from "../../assets/ConversationEmptyState.svg";
 import { closeSearchModal } from "../../redux/slices/userSlice";
 import { getAllConversations } from "../../redux/actions/conversationActions";
 import { useNavigate } from "react-router";
+import CreateGroupModal from "../../components/Conversations/CreateGroupModal";
 
 // eslint-disable-next-line react/prop-types
 const ConversationsPage = () => {
@@ -58,6 +59,7 @@ const ConversationsPage = () => {
   return (
     <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100dvh-4rem)]">
       <UserSearchModal />
+      <CreateGroupModal />
       {isDesktop ? (
         <>
           <ConversationListPanel />

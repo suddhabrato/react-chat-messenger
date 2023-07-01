@@ -16,9 +16,26 @@ const Navbar = () => {
       {hasFetched && (
         <div className="navbar-end">
           {user ? (
-            <button className="btn btn-outline" onClick={logOut}>
-              Log out
-            </button>
+            <div className="flex gap-4 items-center">
+              <div className="font-normal py-2 h-auto rounded-xl truncate">
+                <div className="flex items-center gap-3 w-full">
+                  <div className="avatar online">
+                    <div className="w-10 rounded-full">
+                      <img src={user.avatar} />
+                    </div>
+                  </div>
+                  <div className="hidden lg:flex flex-col justify-center items-start gap-0 truncate w-full">
+                    <h3 className="text-lg font-medium truncate leading-tight">
+                      {user.displayname}
+                    </h3>
+                    <p className="text-xs leading-tight">@{user.username}</p>
+                  </div>
+                </div>
+              </div>
+              <button className="btn btn-outline" onClick={logOut}>
+                Log out
+              </button>
+            </div>
           ) : (
             <button className="btn btn-outline" onClick={signInWithGoogle}>
               <svg className="w-6 h-6 pb-0.5" viewBox="0 0 40 40">

@@ -6,12 +6,25 @@ const initialState = {
   searchResults: [],
   isLoading: false,
   searchModalOpen: false,
+  newGroupModalOpen: false,
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    openGroupModal: (state) => {
+      state.newGroupModalOpen = true;
+      state.searchText = "";
+      state.searchResults = [];
+      state.isLoading = false;
+    },
+    closeGroupModal: (state) => {
+      state.newGroupModalOpen = false;
+      state.searchText = "";
+      state.searchResults = [];
+      state.isLoading = false;
+    },
     openSearchModal: (state) => {
       state.searchModalOpen = true;
       state.searchText = "";
@@ -50,7 +63,13 @@ export const userSlice = createSlice({
   },
 });
 
-export const { setSearchText, clearSearch, closeSearchModal, openSearchModal } =
-  userSlice.actions;
+export const {
+  setSearchText,
+  clearSearch,
+  closeSearchModal,
+  openSearchModal,
+  openGroupModal,
+  closeGroupModal,
+} = userSlice.actions;
 
 export default userSlice.reducer;

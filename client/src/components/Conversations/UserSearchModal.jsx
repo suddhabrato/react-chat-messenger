@@ -2,11 +2,14 @@ import { useDispatch, useSelector } from "react-redux";
 import {
   clearSearch,
   closeSearchModal,
+  openGroupModal,
   setSearchText,
 } from "../../redux/slices/userSlice";
 import { useEffect, useRef, useState } from "react";
 import { getSearchUsers } from "../../redux/actions/userActions";
 import UserSearchItem from "./UserSearchItem";
+import { showGroupModal } from "./CreateGroupModal";
+import useMediaQuery from "../../hooks/useMediaQuery";
 
 // eslint-disable-next-line react-refresh/only-export-components
 export const showModal = () => {
@@ -14,6 +17,7 @@ export const showModal = () => {
 };
 
 const UserSearchModal = () => {
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
   const searchRef = useRef(null);
   const dispatch = useDispatch();
   const searchText = useSelector((state) => state.user.searchText);
@@ -23,10 +27,10 @@ const UserSearchModal = () => {
 
   useEffect(() => {
     dispatch(clearSearch());
-    if (searchRef.current && searchRef.current && isSearchModalOpen)
+    if (searchRef.current && isSearchModalOpen && isDesktop)
       searchRef.current.focus();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSearchModalOpen]);
+  }, [isSearchModalOpen, isDesktop]);
 
   const handleSearchChange = (e) => {
     dispatch(setSearchText(e.target.value));
@@ -46,7 +50,7 @@ const UserSearchModal = () => {
 
   return (
     <dialog id="new_message_modal" className="modal">
-      <form method="dialog" className="modal-box max-h-[60vh]">
+      <form method="dialog" className="modal-box">
         <button
           className="btn btn-sm btn-circle btn-ghost absolute right-2 top-2"
           onClick={() => dispatch(closeSearchModal())}
@@ -57,8 +61,17 @@ const UserSearchModal = () => {
         <p className="py-4">
           Search for the user you want to message or
           <br />
-          <span className="link">Click Here</span> to create a group
-          conversation
+          <button
+            onClick={() => {
+              showGroupModal();
+              dispatch(openGroupModal());
+              dispatch(closeSearchModal());
+            }}
+            className="link"
+          >
+            Click Here
+          </button>{" "}
+          to create a group conversation
         </p>
 
         <div className="join w-full">
