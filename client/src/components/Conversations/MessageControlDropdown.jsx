@@ -2,13 +2,13 @@ import { useDispatch } from "react-redux";
 import { deleteMessage } from "../../redux/actions/conversationActions";
 import { useState } from "react";
 // eslint-disable-next-line react/prop-types
-const MessageControlDropdown = ({ self, id }) => {
+const MessageControlDropdown = ({ self, id, last }) => {
   const dispatch = useDispatch();
   const [isDeleting, setDeleting] = useState(false);
   return (
     <div className="absolute top-1 right-2">
       <div
-        className={`dropdown dropdown-bottom ${
+        className={`dropdown ${last ? "dropdown-top" : "dropdown-bottom"} ${
           self ? "dropdown-left" : "dropdown-right"
         }`}
       >

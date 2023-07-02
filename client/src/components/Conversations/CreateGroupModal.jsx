@@ -30,7 +30,7 @@ const CreateGroupModal = () => {
   const [title, setTitle] = useState("");
   const user = useSelector((state) => state.auth.user);
   const isSubmitting = useSelector(
-    (state) => state.conversation.creatingNewConversation
+    (state) => state.conversation.creatingNewGroupConversation
   );
 
   useEffect(() => {
@@ -90,7 +90,7 @@ const CreateGroupModal = () => {
 
     setTimeout(() => {
       buttonRef && buttonRef.current.click();
-    }, 3000);
+    }, 1500);
   };
 
   return (
@@ -145,6 +145,26 @@ const CreateGroupModal = () => {
                 </div>
               </div>
               @{participant.username}
+              <div
+                onClick={() => removeParticipant(participant)}
+                className="btn btn-xs btn-neutral btn-circle ml-1 h-4 w-4 min-h-[1rem]"
+              >
+                <svg
+                  className="w-3 h-3"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </div>
             </div>
           ))}
         </div>

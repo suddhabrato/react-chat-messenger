@@ -17,7 +17,7 @@ const Navbar = () => {
         <div className="navbar-end">
           {user ? (
             <div className="flex gap-4 items-center">
-              <div className="font-normal py-2 h-auto rounded-xl truncate">
+              <div className="font-normal h-auto rounded-xl truncate">
                 <div className="flex items-center gap-3 w-full">
                   <div className="avatar online">
                     <div className="w-10 rounded-full">

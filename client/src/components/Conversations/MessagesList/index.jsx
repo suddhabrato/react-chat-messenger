@@ -41,12 +41,9 @@ const MessagesList = () => {
   }, [conversation, dispatch]);
 
   useEffect(() => {
-    //Workaround to activate scrollintoview after dom has rendered
-    setTimeout(() => {
-      if (messageListRef.current && !isLoading && !isSubmitting) {
-        messageListRef.current.scrollIntoView();
-      }
-    }, 0);
+    if (messageListRef.current && !isLoading && !isSubmitting) {
+      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    }
   }, [isLoading, isSubmitting]);
 
   if (isLoading && conversation) return <Loader />;
@@ -59,11 +56,15 @@ const MessagesList = () => {
       />
     );
   return (
-    <div className="bg-base-200 w-full h-full p-4 lg:p-6 overflow-y-auto overflow-x-hidden">
-      {messages.map((message) => {
+    <div
+      ref={messageListRef}
+      className="bg-base-200 w-full h-full p-4 lg:p-6 overflow-y-auto overflow-x-hidden flex flex-col-reverse scroll-smooth"
+    >
+      {messages.map((message, ind) => {
         if (message.media?.length > 0) {
           return (
             <MessageImage
+              last={ind === messages.length - 1 && ind > 0}
               key={message._id}
               id={message._id}
               author={
@@ -81,6 +82,7 @@ const MessagesList = () => {
         } else
           return (
             <MessageText
+              last={ind === messages.length - 1 && ind > 0}
               id={message._id}
               key={message._id}
               author={
@@ -95,7 +97,6 @@ const MessagesList = () => {
             />
           );
       })}
-      <div ref={messageListRef}></div>
     </div>
   );
 };

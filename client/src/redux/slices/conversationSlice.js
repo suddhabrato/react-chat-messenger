@@ -20,6 +20,7 @@ export const conversationSlice = createSlice({
     newMessageText: "",
     sendingMessage: false,
     creatingNewConversation: false,
+    creatingNewGroupConversation: false,
   },
   reducers: {
     setCreatingNewConversation: (state, { payload }) => {
@@ -83,7 +84,7 @@ export const conversationSlice = createSlice({
     builder.addCase(getAllMessages.fulfilled, (state, { payload }) => {
       state.isLoading = false;
       state.hasError = false;
-      state.messages = payload.reverse();
+      state.messages = payload;
       state.sendingMessage = false;
     });
 
@@ -106,7 +107,7 @@ export const conversationSlice = createSlice({
       state.sendingMessage = false;
       state.hasError = false;
       state.newMessageText = "";
-      if (payload) state.messages = [...state.messages, payload];
+      if (payload) state.messages = [payload, ...state.messages];
       state.creatingNewConversation = false;
     });
 
@@ -161,7 +162,7 @@ export const conversationSlice = createSlice({
     //CREATING NEW GROUP CONVERSATION
     builder.addCase(createNewGroupConversation.pending, (state) => {
       state.hasError = false;
-      state.creatingNewConversation = true;
+      state.creatingNewGroupConversation = true;
     });
 
     builder.addCase(
@@ -172,13 +173,13 @@ export const conversationSlice = createSlice({
           state.conversationsList = [payload, ...state.conversationsList];
           state.currentConversation = payload;
         }
-        state.creatingNewConversation = false;
+        state.creatingNewGroupConversation = false;
       }
     );
 
     builder.addCase(createNewGroupConversation.rejected, (state) => {
       state.hasError = true;
-      state.creatingNewConversation = false;
+      state.creatingNewGroupConversation = false;
     });
   },
 });
