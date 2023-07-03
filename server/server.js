@@ -15,10 +15,12 @@ app.options("*", cors(corsOptions));
 app.use(cors(corsOptions));
 
 const http = require("http").createServer(app);
-const io = require("socket.io")(http);
+const io = require("socket.io")(http, {
+  cors: { origin: "*" },
+});
 
 io.on("connection", (socket) => {
-  SocketServer(socket);
+  SocketServer(socket, io);
 });
 
 //dummy route for keeping API UP

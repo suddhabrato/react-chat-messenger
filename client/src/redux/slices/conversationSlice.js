@@ -7,6 +7,7 @@ import {
   getAllMessages,
   lookUpConversationByParticipants,
 } from "../actions/conversationActions";
+import { emitEvent } from "../../socketService";
 
 export const conversationSlice = createSlice({
   name: "conversation",
@@ -23,6 +24,9 @@ export const conversationSlice = createSlice({
     creatingNewGroupConversation: false,
   },
   reducers: {
+    addMessage: (state, { payload }) => {
+      state.messages = [payload, ...state.messages];
+    },
     setCreatingNewConversation: (state, { payload }) => {
       state.creatingNewConversation = true;
       state.currentConversation = payload;
@@ -107,7 +111,7 @@ export const conversationSlice = createSlice({
       state.sendingMessage = false;
       state.hasError = false;
       state.newMessageText = "";
-      if (payload) state.messages = [payload, ...state.messages];
+      if (payload) emitEvent("addMessage", payload);
       state.creatingNewConversation = false;
     });
 
@@ -190,6 +194,7 @@ export const {
   clearCurrentConversation,
   setMessageText,
   setCreatingNewConversation,
+  addMessage,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

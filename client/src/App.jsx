@@ -9,6 +9,7 @@ import { clearUser } from "./redux/slices/authSlice";
 import { useEffect } from "react";
 import { getCurrentUser } from "./redux/actions/authActions";
 import { clearConversations } from "./redux/slices/conversationSlice";
+import SocketClient from "./SocketClient";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -26,6 +27,7 @@ const App = () => {
 
   return (
     <div className="app">
+      <SocketClient />
       <BrowserRouter>
         <Navbar />
         <Routes>

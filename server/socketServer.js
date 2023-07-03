@@ -1,6 +1,6 @@
 let users = [];
 
-const SocketServer = (socket) => {
+const SocketServer = (socket, io) => {
   socket.on("joinUser", (id) => {
     users.push({ id, socketId: socket.id });
   });
@@ -10,8 +10,13 @@ const SocketServer = (socket) => {
   });
 
   socket.on("addMessage", (msg) => {
-    const user = users.find((user) => user.id === msg.recipient);
-    user && socket.to(`${user.socketId}`).emit("addMessageToClient", msg);
+    const recipientUsers = users.filter((user) =>
+      msg.recipients.includes(user.id)
+    );
+
+    recipientUsers.forEach((user) =>
+      io.to(`${user.socketId}`).emit("addMessageToClient", msg)
+    );
   });
 };
 

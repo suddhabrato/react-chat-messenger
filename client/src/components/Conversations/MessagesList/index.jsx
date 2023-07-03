@@ -64,7 +64,7 @@ const MessagesList = () => {
         if (message.media?.length > 0) {
           return (
             <MessageImage
-              last={ind === messages.length - 1 && ind > 0}
+              last={ind === 0}
               key={message._id}
               id={message._id}
               author={
@@ -82,7 +82,7 @@ const MessagesList = () => {
         } else
           return (
             <MessageText
-              last={ind === messages.length - 1 && ind > 0}
+              last={ind === 0}
               id={message._id}
               key={message._id}
               author={
