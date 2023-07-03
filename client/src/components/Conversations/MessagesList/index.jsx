@@ -1,7 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import MessageImage from "./MessageImage";
 import MessageText from "./MessageText";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   getAllMessages,
   lookUpConversationByParticipants,
@@ -18,10 +18,9 @@ const MessagesList = () => {
   );
   const messages = useSelector((state) => state.conversation.messages);
   const isLoading = useSelector((state) => state.conversation.isLoading);
-  const isSubmitting = useSelector(
-    (state) => state.conversation.sendingMessage
-  );
+
   const messageListRef = useRef(null);
+  const [prevMessages, setPrevMessages] = useState(messages.length);
 
   useEffect(() => {
     if (conversation) {
@@ -41,10 +40,15 @@ const MessagesList = () => {
   }, [conversation, dispatch]);
 
   useEffect(() => {
-    if (messageListRef.current && !isLoading && !isSubmitting) {
-      messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+    if (messageListRef.current && !isLoading) {
+      if (prevMessages < messages.length)
+        setTimeout(() => {
+          messageListRef.current.scrollTop =
+            messageListRef.current.scrollHeight;
+        }, 100);
+      setPrevMessages(messages.length);
     }
-  }, [isLoading, isSubmitting]);
+  }, [isLoading, messages, prevMessages]);
 
   if (isLoading && conversation) return <Loader />;
   if (!isLoading && conversation && messages.length === 0)

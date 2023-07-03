@@ -26,7 +26,7 @@ export const conversationSlice = createSlice({
   reducers: {
     addMessage: (state, { payload }) => {
       if (payload.savedMessage) {
-        if (state.currentConversation._id === payload.conversation._id) {
+        if (state.currentConversation?._id === payload.conversation._id) {
           state.messages = [payload.savedMessage, ...state.messages];
           state.messages = state.messages.sort(
             (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
@@ -56,7 +56,7 @@ export const conversationSlice = createSlice({
       }
     },
     removeMessage: (state, { payload }) => {
-      if (state.currentConversation._id === payload.conversation._id)
+      if (state.currentConversation?._id === payload.conversation._id)
         state.messages = state.messages.filter(
           (message) => message._id !== payload.msg._id
         );
@@ -66,6 +66,12 @@ export const conversationSlice = createSlice({
           ? { ...payload.conversation }
           : { ...conversation }
       );
+    },
+    addGroupConversation: (state, { payload }) => {
+      state.conversationsList = [payload, ...state.conversationsList];
+      state.conversationsList = state.conversationsList.sort((a, b) => {
+        return new Date(b.updatedAt) - new Date(a.updatedAt);
+      });
     },
     setCreatingNewConversation: (state, { payload }) => {
       state.creatingNewConversation = true;
@@ -216,7 +222,7 @@ export const conversationSlice = createSlice({
       (state, { payload }) => {
         state.hasError = false;
         if (payload) {
-          state.conversationsList = [payload, ...state.conversationsList];
+          emitEvent("addGroupConversation", payload);
           state.currentConversation = payload;
         }
         state.creatingNewGroupConversation = false;
@@ -238,6 +244,7 @@ export const {
   setCreatingNewConversation,
   addMessage,
   removeMessage,
+  addGroupConversation,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

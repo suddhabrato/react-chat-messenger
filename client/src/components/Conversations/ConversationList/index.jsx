@@ -1,4 +1,3 @@
-import { useMemo } from "react";
 import ConversationListItem from "./ConversationListItem";
 import { useSelector } from "react-redux";
 import EmptyState from "../../EmptyState";
@@ -10,11 +9,9 @@ const ConversationList = () => {
   const isLoading = useSelector(
     (state) => state.conversation.isLoadingConversations
   );
-  const state = useSelector((state) => state.conversation);
-
-  const conversations = useMemo(() => {
-    return state.conversationsList;
-  }, [state.conversationsList]);
+  const conversations = useSelector(
+    (state) => state.conversation.conversationsList
+  );
 
   if (hasFetched && !user) return null;
 

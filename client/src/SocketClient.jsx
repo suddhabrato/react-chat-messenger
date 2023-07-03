@@ -2,7 +2,11 @@
 import { useEffect } from "react";
 import { connectSocket, disconnectSocket, getSocket } from "./socketService";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage, removeMessage } from "./redux/slices/conversationSlice";
+import {
+  addGroupConversation,
+  addMessage,
+  removeMessage,
+} from "./redux/slices/conversationSlice";
 
 const SocketClient = () => {
   const dispatch = useDispatch();
@@ -49,6 +53,21 @@ const SocketClient = () => {
       const socket = getSocket();
       if (socket) {
         socket.off("deleteMessageFromClient");
+      }
+    };
+  }, [user]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on("addGroupConversationToClient", (conversation) => {
+        dispatch(addGroupConversation(conversation));
+      });
+    }
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("addGroupConversationToClient");
       }
     };
   }, [user]);

@@ -32,6 +32,20 @@ const MessageListPanel = () => {
     return otherParticipant.avatar;
   };
 
+  const getParticipantNames = (conversation) => {
+    if (conversation.type !== "Group") return;
+    const names = conversation.participants
+      .filter((participant) => participant._id !== user._id)
+      .map((participant) =>
+        participant.displayname.length > 10 ||
+        conversation.participants.length > 3
+          ? participant.displayname.split(" ")[0]
+          : participant.displayname
+      )
+      .join(", ");
+    return names;
+  };
+
   return (
     <div className="flex flex-col w-full h-full bg-base-200 lg:rounded-2xl overflow-hidden">
       <div className="flex bg-base-300 px-1 lg:px-4 py-2 items-center w-full">
@@ -56,7 +70,7 @@ const MessageListPanel = () => {
               />
             </svg>
           </button>
-          <Link className="btn btn-ghost capitalize font-normal py-2 h-auto rounded-xl truncate w-full">
+          <Link className="btn btn-ghost normal-case font-normal py-2 h-auto rounded-xl truncate w-full">
             <div className="flex items-center gap-3 w-full">
               <div className="avatar online">
                 <div className="w-10 rounded-full">
@@ -67,7 +81,11 @@ const MessageListPanel = () => {
                 <h3 className="text-lg font-medium truncate leading-tight">
                   {getTitle(currentConversation)}
                 </h3>
-                <p className="text-xs leading-tight">Active Now</p>
+                <p className="text-xs leading-tight truncate w-full text-start">
+                  {currentConversation.type === "Group"
+                    ? getParticipantNames(currentConversation)
+                    : "Active Now"}
+                </p>
               </div>
             </div>
           </Link>

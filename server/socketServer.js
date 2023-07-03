@@ -30,6 +30,18 @@ const SocketServer = (socket, io) => {
         .emit("deleteMessageFromClient", { msg, conversation })
     );
   });
+
+  socket.on("addGroupConversation", (conversation) => {
+    const recipientUsers = users.filter((user) =>
+      conversation.participants.includes(user.id)
+    );
+
+    recipientUsers.forEach((user) =>
+      io
+        .to(`${user.socketId}`)
+        .emit("addGroupConversationToClient", conversation)
+    );
+  });
 };
 
 module.exports = SocketServer;
