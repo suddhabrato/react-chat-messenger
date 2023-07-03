@@ -64,6 +64,7 @@ const MessagesList = () => {
         if (message.media?.length > 0) {
           return (
             <MessageImage
+              message={message}
               last={ind === 0}
               key={message._id}
               id={message._id}
@@ -82,6 +83,7 @@ const MessagesList = () => {
         } else
           return (
             <MessageText
+              message={message}
               last={ind === 0}
               id={message._id}
               key={message._id}

@@ -25,7 +25,47 @@ export const conversationSlice = createSlice({
   },
   reducers: {
     addMessage: (state, { payload }) => {
-      state.messages = [payload, ...state.messages];
+      if (payload.savedMessage) {
+        if (state.currentConversation._id === payload.conversation._id) {
+          state.messages = [payload.savedMessage, ...state.messages];
+          state.messages = state.messages.sort(
+            (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
+          );
+        }
+
+        const existingConversation = state.conversationsList.find(
+          (conversation) => conversation._id === payload.conversation._id
+        );
+
+        if (!existingConversation)
+          state.conversationsList = [
+            payload.conversation,
+            ...state.conversationsList,
+          ];
+        else
+          state.conversationsList = state.conversationsList.map(
+            (conversation) =>
+              conversation._id === payload.conversation._id
+                ? { ...payload.conversation }
+                : { ...conversation }
+          );
+
+        state.conversationsList = state.conversationsList.sort((a, b) => {
+          return new Date(b.updatedAt) - new Date(a.updatedAt);
+        });
+      }
+    },
+    removeMessage: (state, { payload }) => {
+      if (state.currentConversation._id === payload.conversation._id)
+        state.messages = state.messages.filter(
+          (message) => message._id !== payload.msg._id
+        );
+
+      state.conversationsList = state.conversationsList.map((conversation) =>
+        conversation._id === payload.conversation._id
+          ? { ...payload.conversation }
+          : { ...conversation }
+      );
     },
     setCreatingNewConversation: (state, { payload }) => {
       state.creatingNewConversation = true;
@@ -111,7 +151,11 @@ export const conversationSlice = createSlice({
       state.sendingMessage = false;
       state.hasError = false;
       state.newMessageText = "";
-      if (payload) emitEvent("addMessage", payload);
+      if (payload) {
+        if (payload.conversation && !state.currentConversation._id)
+          state.currentConversation = payload.conversation;
+        emitEvent("addMessage", payload);
+      }
       state.creatingNewConversation = false;
     });
 
@@ -153,10 +197,8 @@ export const conversationSlice = createSlice({
 
     builder.addCase(deleteMessage.fulfilled, (state, { payload }) => {
       state.hasError = false;
-      if (payload)
-        state.messages = state.messages.filter(
-          (message) => message._id !== payload
-        );
+      console.log(payload);
+      if (payload.conversation) emitEvent("deleteMessage", payload);
     });
 
     builder.addCase(deleteMessage.rejected, (state) => {
@@ -195,6 +237,7 @@ export const {
   setMessageText,
   setCreatingNewConversation,
   addMessage,
+  removeMessage,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

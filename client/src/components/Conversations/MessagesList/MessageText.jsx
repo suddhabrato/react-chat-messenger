@@ -12,6 +12,7 @@ const MessageText = ({
   self,
   id,
   last,
+  message,
 }) => {
   const createdAt = new Date(sentTime).toLocaleTimeString("en-US", options);
   return (
@@ -26,7 +27,12 @@ const MessageText = ({
         <time className="text-xs opacity-50">{createdAt}</time>
       </div>
       <div className="chat-bubble break-all pr-5">
-        <MessageControlDropdown self={self} id={id} last={last} />
+        <MessageControlDropdown
+          self={self}
+          id={id}
+          last={last}
+          message={message}
+        />
         {body}
       </div>
       {seenTime && (

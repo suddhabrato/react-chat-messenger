@@ -79,8 +79,8 @@ export const createNewMessage = createAsyncThunk(
 
       const res = await api.post("/conversations/newMessage", body);
 
-      console.log(res.data?.savedMessage);
-      return res.data?.savedMessage;
+      console.log(res.data);
+      return res.data;
     } catch (err) {
       console.error(err);
     }
@@ -131,13 +131,19 @@ const uploadImages = async (selectedFiles) => {
   }
 };
 
-export const deleteMessage = createAsyncThunk("deleteMessage", async (id) => {
-  try {
-    if (!id) return;
-    const res = await api.delete(`/conversations/message/${id}`);
-    console.log(res.data);
-    return id;
-  } catch (err) {
-    console.error(err);
+export const deleteMessage = createAsyncThunk(
+  "deleteMessage",
+  async ({ msg, conversation }) => {
+    try {
+      if (!msg) return;
+      const res = await api.delete(
+        `/conversations/message/${msg._id}?conversation=${conversation._id}`
+      );
+      console.log(res.data);
+      const returnedConvo = res.data?.conversation;
+      return { conversation: returnedConvo, msg };
+    } catch (err) {
+      console.error(err);
+    }
   }
-});
+);

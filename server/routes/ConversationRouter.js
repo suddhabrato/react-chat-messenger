@@ -27,12 +27,6 @@ router.post(
 module.exports = router;
 
 router.delete(
-  "/:convId",
-  authMiddleware,
-  ConversationController.deleteConversation
-);
-
-router.delete(
   "/message/:msgId",
   authMiddleware,
   ConversationController.deleteMessage

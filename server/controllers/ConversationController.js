@@ -130,7 +130,19 @@ const ConversationController = {
           select: "displayname avatar",
         });
 
-        res.status(201).json({ savedMessage });
+        const newConversation = await Conversation.findById(conversation._id)
+          .populate("participants")
+          .populate({
+            path: "messages",
+            options: { sort: { createdAt: -1 } },
+            populate: { path: "author", select: "displayname" },
+            perDocumentLimit: 1,
+          });
+
+        res.status(201).json({
+          savedMessage,
+          conversation: newConversation,
+        });
       } else if (type === "Individual") {
         if (
           !recipients ||
@@ -207,7 +219,19 @@ const ConversationController = {
           select: "displayname avatar",
         });
 
-        res.status(201).json({ savedMessage });
+        const newConversation = await Conversation.findById(conversation._id)
+          .populate("participants")
+          .populate({
+            path: "messages",
+            options: { sort: { createdAt: -1 } },
+            populate: { path: "author", select: "displayname" },
+            perDocumentLimit: 1,
+          });
+
+        res.status(201).json({
+          savedMessage,
+          conversation: newConversation,
+        });
       } else {
         return res.status(400).json({ msg: "Unknown Conversation Type" });
       }
@@ -252,26 +276,12 @@ const ConversationController = {
       return res.status(500).json({ msg: err.message });
     }
   },
-  deleteConversation: async (req, res) => {
-    try {
-      const { convId } = req.params;
-      const messages = await Conversation.findOne({
-        $and: [{ _id: convId }, { _id: { $in: req.user.conversations } }],
-      })
-        .select("messages")
-        .populate({
-          path: "messages",
-          options: { sort: { updatedAt: -1 } },
-          populate: { path: "author", select: "displayname avatar" },
-        });
-    } catch (err) {
-      return res.status(500).json({ msg: err.message });
-    }
-  },
 
   deleteMessage: async (req, res) => {
     try {
       const { msgId } = req.params;
+      const { conversation } = req.query;
+
       const message = await Message.findById(msgId);
       if (!message)
         return res.status(400).json({ msg: "Message could not be found" });
@@ -290,7 +300,30 @@ const ConversationController = {
       }
 
       await Message.deleteOne({ _id: msgId });
-      res.status(200).json({ msg: "Message deleted successfully" });
+
+      await Conversation.findByIdAndUpdate(
+        conversation,
+        {
+          $pull: { messages: msgId },
+        },
+        { timestamps: false }
+      );
+
+      const newConversation = await Conversation.findById(conversation)
+        .populate("participants")
+        .populate({
+          path: "messages",
+          options: { sort: { createdAt: -1 } },
+          populate: { path: "author", select: "displayname" },
+          perDocumentLimit: 1,
+        });
+
+      res
+        .status(200)
+        .json({
+          msg: "Message deleted successfully",
+          conversation: newConversation,
+        });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: err.message });

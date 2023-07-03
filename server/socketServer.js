@@ -11,11 +11,23 @@ const SocketServer = (socket, io) => {
 
   socket.on("addMessage", (msg) => {
     const recipientUsers = users.filter((user) =>
-      msg.recipients.includes(user.id)
+      msg?.savedMessage?.recipients.includes(user.id)
     );
 
     recipientUsers.forEach((user) =>
       io.to(`${user.socketId}`).emit("addMessageToClient", msg)
+    );
+  });
+
+  socket.on("deleteMessage", ({ msg, conversation }) => {
+    const recipientUsers = users.filter((user) =>
+      msg.recipients.includes(user.id)
+    );
+
+    recipientUsers.forEach((user) =>
+      io
+        .to(`${user.socketId}`)
+        .emit("deleteMessageFromClient", { msg, conversation })
     );
   });
 };

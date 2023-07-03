@@ -2,7 +2,7 @@
 import { useEffect } from "react";
 import { connectSocket, disconnectSocket, getSocket } from "./socketService";
 import { useDispatch, useSelector } from "react-redux";
-import { addMessage } from "./redux/slices/conversationSlice";
+import { addMessage, removeMessage } from "./redux/slices/conversationSlice";
 
 const SocketClient = () => {
   const dispatch = useDispatch();
@@ -34,6 +34,21 @@ const SocketClient = () => {
       const socket = getSocket();
       if (socket) {
         socket.off("addMessageToClient");
+      }
+    };
+  }, [user]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on("deleteMessageFromClient", (msg) => {
+        dispatch(removeMessage(msg));
+      });
+    }
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("deleteMessageFromClient");
       }
     };
   }, [user]);

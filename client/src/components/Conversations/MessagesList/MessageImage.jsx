@@ -12,6 +12,7 @@ const MessageImage = ({
   avatar,
   sentTime,
   self,
+  message,
 }) => {
   const createdAt = new Date(sentTime).toLocaleTimeString("en-US", options);
   return (
@@ -26,7 +27,7 @@ const MessageImage = ({
         <time className="text-xs opacity-50">{createdAt}</time>
       </div>
       <div className="chat-bubble w-min">
-        <MessageControlDropdown id={id} self={self} />
+        <MessageControlDropdown id={id} self={self} message={message} />
         {images?.map((image) => (
           <img
             key={image.publicId}

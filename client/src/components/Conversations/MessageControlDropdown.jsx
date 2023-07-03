@@ -1,8 +1,11 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { deleteMessage } from "../../redux/actions/conversationActions";
 import { useState } from "react";
 // eslint-disable-next-line react/prop-types
-const MessageControlDropdown = ({ self, id, last }) => {
+const MessageControlDropdown = ({ self, id, last, message }) => {
+  const conversation = useSelector(
+    (state) => state.conversation.currentConversation
+  );
   const dispatch = useDispatch();
   const [isDeleting, setDeleting] = useState(false);
   return (
@@ -61,7 +64,7 @@ const MessageControlDropdown = ({ self, id, last }) => {
               className={isDeleting ? "disabled" : ""}
               onClick={() => {
                 setDeleting(true);
-                dispatch(deleteMessage(id));
+                dispatch(deleteMessage({ msg: message, conversation }));
               }}
             >
               <a>
