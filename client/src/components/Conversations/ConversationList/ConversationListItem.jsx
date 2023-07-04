@@ -2,6 +2,7 @@
 
 import { useDispatch, useSelector } from "react-redux";
 import { selectConversation } from "../../../redux/slices/conversationSlice";
+import { formatRelativeDate } from "../../../utils/DateTimeHelper";
 
 const ConversationListItem = ({ conversation }) => {
   const dispatch = useDispatch();
@@ -10,11 +11,29 @@ const ConversationListItem = ({ conversation }) => {
     (state) => state.conversation.currentConversation
   );
 
+  const activeUsers = useSelector((state) => state.user.activeUsers);
+
+  const getActiveStatus = (conversation) => {
+    if (conversation.type === "Group") {
+      return conversation.participants.find(
+        (participant) =>
+          participant._id !== user._id && activeUsers.includes(participant._id)
+      );
+    } else if (conversation.type === "Individual") {
+      const otherParticipant = conversation.participants.find(
+        (participant) => participant._id !== user._id
+      );
+
+      return activeUsers.includes(otherParticipant._id);
+    }
+    return false;
+  };
+
   const getAvatar = (conversation) => {
     if (conversation.type === "Group") return conversation.avatar;
 
     const otherParticipant = conversation.participants.find(
-      (participant) => participant._id != user._id
+      (participant) => participant._id !== user._id
     );
 
     return otherParticipant.avatar;
@@ -24,7 +43,7 @@ const ConversationListItem = ({ conversation }) => {
     if (conversation.type === "Group") return conversation.title;
 
     const otherParticipant = conversation.participants.find(
-      (participant) => participant._id != user._id
+      (participant) => participant._id !== user._id
     );
 
     return otherParticipant.displayname;
@@ -55,8 +74,12 @@ const ConversationListItem = ({ conversation }) => {
     }
   };
 
+  const unseenCount = Math.floor(Math.random() * 15);
+
   if (!conversation || !user) return null;
+
   const activeItem = currentConversation?._id === conversation?._id;
+
   return (
     <li className="w-full">
       <div
@@ -68,7 +91,11 @@ const ConversationListItem = ({ conversation }) => {
         }
       >
         <div>
-          <div className="avatar online">
+          <div
+            className={`avatar ${
+              getActiveStatus(conversation) ? "online" : "offline"
+            }`}
+          >
             <div className="w-14 rounded-full">
               <img src={getAvatar(conversation)} referrerPolicy="no-referrer" />
             </div>
@@ -79,6 +106,14 @@ const ConversationListItem = ({ conversation }) => {
           <p className="text-sm font-extralight h-6 truncate w-full">
             {getNotif(conversation)}
           </p>
+        </div>
+        <div className="flex flex-col h-12 text-xs items-end justify-between">
+          {formatRelativeDate(new Date(conversation.updatedAt))}
+          {unseenCount > 0 && (
+            <div className="badge badge-primary badge-sm min-h-[22px] min-w-[22px] text-xs text-white">
+              {unseenCount}
+            </div>
+          )}
         </div>
       </div>
     </li>

@@ -89,7 +89,7 @@ const CreateGroupModal = () => {
     dispatch(createNewGroupConversation({ participants: recepients, title }));
 
     setTimeout(() => {
-      buttonRef && buttonRef.current.click();
+      buttonRef.current && buttonRef.current.click();
     }, 1500);
   };
 

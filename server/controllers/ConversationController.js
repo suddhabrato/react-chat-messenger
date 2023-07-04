@@ -271,7 +271,18 @@ const ConversationController = {
         { $push: { conversations: returnedGroupConvo._id } }
       );
 
-      res.status(201).json({ returnedGroupConvo });
+      const newConversation = await Conversation.findById(
+        returnedGroupConvo._id
+      )
+        .populate("participants")
+        .populate({
+          path: "messages",
+          options: { sort: { createdAt: -1 } },
+          populate: { path: "author", select: "displayname" },
+          perDocumentLimit: 1,
+        });
+
+      res.status(201).json({ returnedGroupConvo: newConversation });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }
@@ -318,12 +329,10 @@ const ConversationController = {
           perDocumentLimit: 1,
         });
 
-      res
-        .status(200)
-        .json({
-          msg: "Message deleted successfully",
-          conversation: newConversation,
-        });
+      res.status(200).json({
+        msg: "Message deleted successfully",
+        conversation: newConversation,
+      });
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: err.message });

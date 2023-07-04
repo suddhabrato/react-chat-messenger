@@ -11,7 +11,23 @@ const MessageListPanel = () => {
   );
 
   const user = useSelector((state) => state.auth.user);
+  const activeUsers = useSelector((state) => state.user.activeUsers);
 
+  const getActiveStatus = (conversation) => {
+    if (conversation.type === "Group") {
+      return conversation.participants.find(
+        (participant) =>
+          participant._id !== user._id && activeUsers.includes(participant._id)
+      );
+    } else if (conversation.type === "Individual") {
+      const otherParticipant = conversation.participants.find(
+        (participant) => participant._id !== user._id
+      );
+
+      return activeUsers.includes(otherParticipant._id);
+    }
+    return false;
+  };
   const getTitle = (conversation) => {
     if (conversation.type === "Group") return conversation.title;
 
@@ -72,7 +88,11 @@ const MessageListPanel = () => {
           </button>
           <Link className="btn btn-ghost normal-case font-normal py-2 h-auto rounded-xl truncate w-full">
             <div className="flex items-center gap-3 w-full">
-              <div className="avatar online">
+              <div
+                className={`avatar ${
+                  getActiveStatus(currentConversation) ? "online" : "offline"
+                }`}
+              >
                 <div className="w-10 rounded-full">
                   <img src={getAvatar(currentConversation)} />
                 </div>
@@ -84,7 +104,9 @@ const MessageListPanel = () => {
                 <p className="text-xs leading-tight truncate w-full text-start">
                   {currentConversation.type === "Group"
                     ? getParticipantNames(currentConversation)
-                    : "Active Now"}
+                    : getActiveStatus(currentConversation)
+                    ? "Active Now"
+                    : "Offline"}
                 </p>
               </div>
             </div>

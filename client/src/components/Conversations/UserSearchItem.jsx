@@ -44,7 +44,7 @@ const UserSearchItem = ({
           }
         >
           <div>
-            <div className="avatar online">
+            <div className="avatar">
               <div className="w-10 rounded-full">
                 <img
                   src={avatar}
@@ -106,7 +106,7 @@ const UserSearchItem = ({
           onClick={() => dispatch(setCreatingNewConversation(conversation))}
         >
           <div>
-            <div className="avatar online">
+            <div className="avatar">
               <div className="w-10 rounded-full">
                 <img src={avatar} referrerPolicy="no-referrer" />
               </div>

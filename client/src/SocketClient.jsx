@@ -7,10 +7,14 @@ import {
   addMessage,
   removeMessage,
 } from "./redux/slices/conversationSlice";
+import { setActiveUsers, subscribeToUsers } from "./redux/slices/userSlice";
 
 const SocketClient = () => {
   const dispatch = useDispatch();
   const user = useSelector((state) => state.auth.user);
+  const conversations = useSelector(
+    (state) => state.conversation.conversationsList
+  );
 
   useEffect(() => {
     if (user) {
@@ -68,6 +72,40 @@ const SocketClient = () => {
       const socket = getSocket();
       if (socket) {
         socket.off("addGroupConversationToClient");
+      }
+    };
+  }, [user]);
+
+  const getUserstoSubscribe = (conversations) => {
+    const participantsSet = new Set();
+    conversations.forEach((conversation) => {
+      conversation.participants.forEach((participant) =>
+        participantsSet.add(participant._id)
+      );
+    });
+
+    dispatch(subscribeToUsers(Array.from(participantsSet)));
+  };
+
+  useEffect(() => {
+    getUserstoSubscribe(conversations);
+    const interval = setInterval(() => {
+      getUserstoSubscribe(conversations);
+    }, 10000);
+    return () => clearInterval(interval);
+  }, [conversations]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on("sendActiveStatusToClient", (activeUsers) => {
+        dispatch(setActiveUsers(activeUsers));
+      });
+    }
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("sendActiveStatusToClient");
       }
     };
   }, [user]);

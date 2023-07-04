@@ -1,5 +1,6 @@
 import { createSlice } from "@reduxjs/toolkit";
 import { getSearchUsers } from "../actions/userActions";
+import { emitEvent } from "../../socketService";
 
 const initialState = {
   searchText: "",
@@ -7,12 +8,22 @@ const initialState = {
   isLoading: false,
   searchModalOpen: false,
   newGroupModalOpen: false,
+  subscribedUsers: [],
+  activeUsers: [],
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    subscribeToUsers: (state, { payload }) => {
+      state.subscribedUsers = payload;
+      if (state.subscribedUsers.length > 0)
+        emitEvent("getActiveStatus", state.subscribedUsers);
+    },
+    setActiveUsers: (state, { payload }) => {
+      state.activeUsers = payload;
+    },
     openGroupModal: (state) => {
       state.newGroupModalOpen = true;
       state.searchText = "";
@@ -70,6 +81,8 @@ export const {
   openSearchModal,
   openGroupModal,
   closeGroupModal,
+  subscribeToUsers,
+  setActiveUsers,
 } = userSlice.actions;
 
 export default userSlice.reducer;

@@ -8,7 +8,10 @@ import { clearCurrentConversation } from "../../redux/slices/conversationSlice";
 import UserSearchModal from "../../components/Conversations/UserSearchModal";
 import EmptyState from "../../components/EmptyState";
 import placeholder from "../../assets/ConversationEmptyState.svg";
-import { closeSearchModal } from "../../redux/slices/userSlice";
+import {
+  closeGroupModal,
+  closeSearchModal,
+} from "../../redux/slices/userSlice";
 import { getAllConversations } from "../../redux/actions/conversationActions";
 import { useNavigate } from "react-router";
 import CreateGroupModal from "../../components/Conversations/CreateGroupModal";
@@ -25,6 +28,7 @@ const ConversationsPage = () => {
     (state) => state.conversation.currentConversation
   );
   const isSearchModalOpen = useSelector((state) => state.user.searchModalOpen);
+  const isGroupModalOpen = useSelector((state) => state.user.newGroupModalOpen);
 
   useEffect(() => {
     if (hasFetched) {
@@ -36,8 +40,10 @@ const ConversationsPage = () => {
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.keyCode === 27) {
-        if (!isSearchModalOpen) dispatch(clearCurrentConversation());
-        else dispatch(closeSearchModal());
+        if (!isSearchModalOpen && !isGroupModalOpen)
+          dispatch(clearCurrentConversation());
+        if (isSearchModalOpen) dispatch(closeSearchModal());
+        if (isGroupModalOpen) dispatch(closeGroupModal());
       }
     };
 

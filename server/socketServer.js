@@ -1,12 +1,16 @@
 let users = [];
+const activeUsers = new Map();
 
 const SocketServer = (socket, io) => {
   socket.on("joinUser", (id) => {
     users.push({ id, socketId: socket.id });
+    activeUsers.set(id, true);
   });
 
   socket.on("disconnect", () => {
+    const user = users.find((user) => user.socketId === socket.id);
     users = users.filter((user) => user.socketId !== socket.id);
+    if (user) activeUsers.delete(user._id);
   });
 
   socket.on("addMessage", (msg) => {
@@ -32,8 +36,11 @@ const SocketServer = (socket, io) => {
   });
 
   socket.on("addGroupConversation", (conversation) => {
+    const convoparticipants = conversation.participants.map(
+      (participant) => participant._id
+    );
     const recipientUsers = users.filter((user) =>
-      conversation.participants.includes(user.id)
+      convoparticipants.includes(user.id)
     );
 
     recipientUsers.forEach((user) =>
@@ -41,6 +48,13 @@ const SocketServer = (socket, io) => {
         .to(`${user.socketId}`)
         .emit("addGroupConversationToClient", conversation)
     );
+  });
+
+  socket.on("getActiveStatus", (subscribedUsers) => {
+    const filteredActiveUsers = subscribedUsers.filter((subuser) =>
+      activeUsers.get(subuser)
+    );
+    socket.emit("sendActiveStatusToClient", filteredActiveUsers);
   });
 };
 
