@@ -10,7 +10,7 @@ const SocketServer = (socket, io) => {
   socket.on("disconnect", () => {
     const user = users.find((user) => user.socketId === socket.id);
     users = users.filter((user) => user.socketId !== socket.id);
-    if (user) activeUsers.delete(user._id);
+    if (user) activeUsers.delete(user.id);
   });
 
   socket.on("addMessage", (msg) => {
