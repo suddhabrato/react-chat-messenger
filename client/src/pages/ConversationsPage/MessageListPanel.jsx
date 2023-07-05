@@ -94,7 +94,10 @@ const MessageListPanel = () => {
                 }`}
               >
                 <div className="w-10 rounded-full">
-                  <img src={getAvatar(currentConversation)} />
+                  <img
+                    src={getAvatar(currentConversation)}
+                    referrerPolicy="no-referrer"
+                  />
                 </div>
               </div>
               <div className="flex flex-col justify-center items-start gap-0 truncate w-full">

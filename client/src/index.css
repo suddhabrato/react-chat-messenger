@@ -18,7 +18,7 @@ body,
 }
 
 ::-webkit-scrollbar-thumb {
-  background: hsl(var(--b3));
+  background: hsl(var(--bc) / 0.3);
   border-radius: 4rem;
 }
 

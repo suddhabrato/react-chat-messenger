@@ -62,7 +62,7 @@ const MessagesList = () => {
   return (
     <div
       ref={messageListRef}
-      className="bg-base-200 w-full h-full p-4 lg:p-6 overflow-y-auto overflow-x-hidden flex flex-col-reverse scroll-smooth"
+      className="bg-base-200 w-full h-full py-4 lg:py-6 overflow-y-auto overflow-x-hidden flex flex-col-reverse scroll-smooth gap-1"
     >
       {messages.map((message, ind) => {
         if (message.media?.length > 0) {

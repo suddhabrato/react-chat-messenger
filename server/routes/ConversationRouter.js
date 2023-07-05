@@ -24,10 +24,16 @@ router.post(
   ConversationController.createGroupConversation
 );
 
-module.exports = router;
+router.patch(
+  "/message/:id",
+  authMiddleware,
+  ConversationController.markMessageAsSeen
+);
 
 router.delete(
   "/message/:msgId",
   authMiddleware,
   ConversationController.deleteMessage
 );
+
+module.exports = router;

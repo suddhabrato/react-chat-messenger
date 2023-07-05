@@ -147,3 +147,17 @@ export const deleteMessage = createAsyncThunk(
     }
   }
 );
+
+export const markMessageAsSeen = createAsyncThunk(
+  "markMessageAsSeen",
+  async (msgId) => {
+    try {
+      if (!msgId) return;
+      const res = await api.patch(`/conversations/message/${msgId}`);
+      console.log(res);
+      return res.data;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+);

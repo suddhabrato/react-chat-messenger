@@ -79,7 +79,7 @@ const ConversationController = {
         .select("messages")
         .populate({
           path: "messages",
-          options: { sort: { updatedAt: -1 } },
+          options: { sort: { createdAt: -1 } },
           populate: { path: "author", select: "displayname avatar" },
         });
 
@@ -114,7 +114,7 @@ const ConversationController = {
         const message = new Message({
           author: req.user._id,
           recipients: conversation.participants,
-          seen: [],
+          seen: [{ viewer: req.user._id, viewedAt: new Date() }],
           text,
           media,
         });
@@ -203,7 +203,7 @@ const ConversationController = {
         const message = new Message({
           author: req.user._id,
           recipients: conversation.participants,
-          seen: [],
+          seen: [{ viewer: req.user._id, viewedAt: new Date() }],
           text,
           media,
         });
@@ -336,6 +336,38 @@ const ConversationController = {
     } catch (err) {
       console.log(err);
       return res.status(500).json({ msg: err.message });
+    }
+  },
+
+  markMessageAsSeen: async (req, res) => {
+    const messageId = req.params.id;
+    const userId = req.user._id;
+
+    try {
+      const message = await Message.findById(messageId);
+
+      if (!message) {
+        return res.status(404).json({ error: "Message not found" });
+      }
+
+      if (message.seen.find((user) => user.viewer === userId)) {
+        return res
+          .status(400)
+          .json({ error: "Message already marked as seen" });
+      }
+
+      message.seen.push({ viewer: userId, viewedAt: new Date() });
+      await message.save();
+
+      await message.populate({
+        path: "author",
+        select: "displayname avatar",
+      });
+
+      return res.status(200).json({ message });
+    } catch (error) {
+      console.error("Error marking message as seen:", error);
+      return res.status(500).json({ error: "Internal server error" });
     }
   },
 };

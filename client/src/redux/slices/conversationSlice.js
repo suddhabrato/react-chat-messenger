@@ -6,6 +6,7 @@ import {
   getAllConversations,
   getAllMessages,
   lookUpConversationByParticipants,
+  markMessageAsSeen,
 } from "../actions/conversationActions";
 import { emitEvent } from "../../socketService";
 
@@ -232,6 +233,22 @@ export const conversationSlice = createSlice({
     builder.addCase(createNewGroupConversation.rejected, (state) => {
       state.hasError = true;
       state.creatingNewGroupConversation = false;
+    });
+
+    //MARKING MESSAGE AS SEEN
+    builder.addCase(markMessageAsSeen.pending, (state) => {
+      state.hasError = false;
+    });
+
+    builder.addCase(markMessageAsSeen.fulfilled, (state, { payload }) => {
+      state.hasError = false;
+      state.messages = state.messages.map((message) =>
+        message._id === payload.message._id ? payload.message : message
+      );
+    });
+
+    builder.addCase(markMessageAsSeen.rejected, (state) => {
+      state.hasError = true;
     });
   },
 });

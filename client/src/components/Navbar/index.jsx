@@ -34,7 +34,7 @@ const Navbar = () => {
                 <div className="flex items-center gap-3 w-full">
                   <div className="avatar online">
                     <div className="w-10 rounded-full">
-                      <img src={user.avatar} />
+                      <img src={user.avatar} referrerPolicy="no-referrer" />
                     </div>
                   </div>
                   <div className="hidden lg:flex flex-col justify-center items-start gap-0 truncate w-full">

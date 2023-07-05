@@ -1,3 +1,4 @@
+/* eslint-disable react/prop-types */
 const EmptyState = ({ title, subtitle, image, large }) => {
   return (
     <div className="w-full h-full flex flex-col justify-center items-center">
