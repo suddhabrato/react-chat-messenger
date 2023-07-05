@@ -6,6 +6,7 @@ import {
   addGroupConversation,
   addMessage,
   removeMessage,
+  updateSeenMessage,
 } from "./redux/slices/conversationSlice";
 import { setActiveUsers, subscribeToUsers } from "./redux/slices/userSlice";
 
@@ -106,6 +107,21 @@ const SocketClient = () => {
       const socket = getSocket();
       if (socket) {
         socket.off("sendActiveStatusToClient");
+      }
+    };
+  }, [user]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on("updateSeenOnClient", (msg) => {
+        dispatch(updateSeenMessage(msg));
+      });
+    }
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("updateSeenOnClient");
       }
     };
   }, [user]);

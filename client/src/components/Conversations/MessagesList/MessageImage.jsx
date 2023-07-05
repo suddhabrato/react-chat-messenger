@@ -11,7 +11,6 @@ const MessageImage = ({
   body,
   images,
   author,
-  seenTime,
   avatar,
   sentTime,
   self,
@@ -47,11 +46,48 @@ const MessageImage = ({
 
   const user = useSelector((state) => state.auth.user);
   const createdAt = new Date(sentTime).toLocaleTimeString("en-US", options);
+  const conversation = useSelector(
+    (state) => state.conversation.currentConversation
+  );
 
   const seen = () => {
     if (message.author._id === user._id) return true;
-    const res = message.seen.find((seenUser) => seenUser.viewer === user?._id);
+    const res = message.seen.find(
+      (seenUser) => seenUser.viewer._id === user?._id
+    );
     return res ? true : false;
+  };
+
+  const seenString = () => {
+    if (message.author._id !== user._id) return null;
+    if (conversation.type === "Individual") {
+      const seenUser = message.seen.find(
+        (seenUser) =>
+          seenUser.viewer._id !== message.author._id &&
+          seenUser.viewer._id !== user._id
+      );
+      if (seenUser)
+        return (
+          "Seen: " +
+          new Date(seenUser.viewedAt).toLocaleTimeString("en-US", options)
+        );
+      return null;
+    }
+    const seenUsers = message.seen
+      .filter(
+        (seenUser) =>
+          seenUser.viewer._id !== message.author._id &&
+          seenUser.viewer._id !== user._id
+      )
+      .map(
+        (seenUser) =>
+          `${seenUser.viewer.displayname.split(" ")[0]} (${new Date(
+            seenUser.viewedAt
+          ).toLocaleTimeString("en-US", options)})`
+      )
+      .join(", ");
+    if (seenUsers) return "Seen by: " + seenUsers;
+    return null;
   };
 
   return (
@@ -81,8 +117,8 @@ const MessageImage = ({
         ))}
         <div className="flex break-all">{body}</div>
       </div>
-      {seenTime && (
-        <div className="chat-footer opacity-50">Seen at {seenTime}</div>
+      {seenString() && (
+        <div className="chat-footer opacity-50">{seenString()}</div>
       )}
     </div>
   );

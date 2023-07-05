@@ -25,6 +25,12 @@ export const conversationSlice = createSlice({
     creatingNewGroupConversation: false,
   },
   reducers: {
+    updateSeenMessage: (state, { payload }) => {
+      if (payload)
+        state.messages = state.messages.map((message) =>
+          message._id === payload._id ? payload : message
+        );
+    },
     addMessage: (state, { payload }) => {
       if (payload.savedMessage) {
         if (state.currentConversation?._id === payload.conversation._id) {
@@ -245,6 +251,7 @@ export const conversationSlice = createSlice({
       state.messages = state.messages.map((message) =>
         message._id === payload.message._id ? payload.message : message
       );
+      emitEvent("updateSeen", payload.message);
     });
 
     builder.addCase(markMessageAsSeen.rejected, (state) => {
@@ -262,6 +269,7 @@ export const {
   addMessage,
   removeMessage,
   addGroupConversation,
+  updateSeenMessage,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;

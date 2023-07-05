@@ -80,7 +80,10 @@ const ConversationController = {
         .populate({
           path: "messages",
           options: { sort: { createdAt: -1 } },
-          populate: { path: "author", select: "displayname avatar" },
+          populate: {
+            path: "author seen.viewer",
+            select: "displayname avatar",
+          },
         });
 
       res.json(messages);
@@ -128,6 +131,11 @@ const ConversationController = {
         await savedMessage.populate({
           path: "author",
           select: "displayname avatar",
+        });
+
+        await savedMessage.populate({
+          path: "seen.viewer",
+          select: "displayname",
         });
 
         const newConversation = await Conversation.findById(conversation._id)
@@ -217,6 +225,11 @@ const ConversationController = {
         await savedMessage.populate({
           path: "author",
           select: "displayname avatar",
+        });
+
+        await savedMessage.populate({
+          path: "seen.viewer",
+          select: "displayname",
         });
 
         const newConversation = await Conversation.findById(conversation._id)
@@ -349,8 +362,11 @@ const ConversationController = {
       if (!message) {
         return res.status(404).json({ error: "Message not found" });
       }
-
-      if (message.seen.find((user) => user.viewer === userId)) {
+      if (
+        message.seen.find(
+          (user) => user.viewer.toString() === userId.toString()
+        )
+      ) {
         return res
           .status(400)
           .json({ error: "Message already marked as seen" });
@@ -362,6 +378,11 @@ const ConversationController = {
       await message.populate({
         path: "author",
         select: "displayname avatar",
+      });
+
+      await message.populate({
+        path: "seen.viewer",
+        select: "displayname",
       });
 
       return res.status(200).json({ message });

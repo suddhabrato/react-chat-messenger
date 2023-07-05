@@ -56,6 +56,11 @@ const SocketServer = (socket, io) => {
     );
     socket.emit("sendActiveStatusToClient", filteredActiveUsers);
   });
+
+  socket.on("updateSeen", (msg) => {
+    const author = users.find((user) => user.id === msg.author._id);
+    if (author) socket.to(`${author.socketId}`).emit("updateSeenOnClient", msg);
+  });
 };
 
 module.exports = SocketServer;
