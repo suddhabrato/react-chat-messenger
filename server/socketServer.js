@@ -63,6 +63,38 @@ const SocketServer = (socket, io) => {
     const author = users.find((user) => user.id === msg.author._id);
     if (author) socket.to(`${author.socketId}`).emit("updateSeenOnClient", msg);
   });
+
+  socket.on("typing", ({ typingUser, conversation }) => {
+    const convoparticipants = conversation.participants.map(
+      (participant) => participant._id
+    );
+    const recipientUsers = users.filter(
+      (user) =>
+        convoparticipants.includes(user.id) && user.id !== typingUser._id
+    );
+
+    recipientUsers.forEach((user) =>
+      socket
+        .to(`${user.socketId}`)
+        .emit("typingUpdateToClient", { conversation, typingUser })
+    );
+  });
+
+  socket.on("notTyping", ({ typingUser, conversation }) => {
+    const convoparticipants = conversation.participants.map(
+      (participant) => participant._id
+    );
+    const recipientUsers = users.filter(
+      (user) =>
+        convoparticipants.includes(user.id) && user.id !== typingUser._id
+    );
+
+    recipientUsers.forEach((user) =>
+      socket
+        .to(`${user.socketId}`)
+        .emit("notTypingUpdateToClient", { conversation, typingUser })
+    );
+  });
 };
 
 module.exports = SocketServer;

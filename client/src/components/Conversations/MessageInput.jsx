@@ -4,6 +4,7 @@ import { setMessageText } from "../../redux/slices/conversationSlice";
 import { useEffect, useRef, useState } from "react";
 import useMediaQuery from "../../hooks/useMediaQuery";
 import ImageUploadCarousel from "./ImageUploadCarousel";
+import { emitEvent } from "../../socketService";
 
 const MessageInput = () => {
   const isDesktop = useMediaQuery("(min-width: 1024px)");
@@ -19,6 +20,9 @@ const MessageInput = () => {
   const isLoading = useSelector((state) => state.conversation.isLoading);
   const messageText = useSelector((state) => state.conversation.newMessageText);
   const [selectedFiles, setSelectedFiles] = useState([]);
+  const [isTyping, setIsTyping] = useState(false);
+  const typingTimeoutRef = useRef(null);
+  const user = useSelector((state) => state.auth.user);
 
   const handleKeyDown = (event) => {
     if (event.key === "Enter") {
@@ -27,6 +31,22 @@ const MessageInput = () => {
   };
 
   const handleChange = (e) => {
+    if (currentConversation._id && !isTyping)
+      emitEvent("typing", {
+        typingUser: user,
+        conversation: currentConversation,
+      });
+    setIsTyping(true);
+    clearTimeout(typingTimeoutRef.current);
+
+    typingTimeoutRef.current = setTimeout(() => {
+      setIsTyping(false);
+      if (currentConversation._id)
+        emitEvent("notTyping", {
+          typingUser: user,
+          conversation: currentConversation,
+        });
+    }, 1000);
     dispatch(setMessageText(e.target.value));
   };
 

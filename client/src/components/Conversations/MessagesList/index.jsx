@@ -50,7 +50,8 @@ const MessagesList = () => {
     }
   }, [isLoading, messages, prevMessages]);
 
-  if (isLoading && conversation) return <Loader />;
+  if (isLoading && conversation)
+    return <Loader text={"Fetching your messages..."} />;
   if (!isLoading && conversation && messages.length === 0)
     return (
       <EmptyState

@@ -55,6 +55,27 @@ const ConversationsPage = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [isSearchModalOpen]);
 
+  useEffect(() => {
+    const handleBackButton = () => {
+      if (chatOpen) {
+        dispatch(clearCurrentConversation());
+      } else {
+        navigate("/", { replace: true });
+      }
+    };
+
+    // Override the default behavior of the browser's back button
+    if (!chatOpen) {
+      window.history.pushState(null, null, window.location.pathname);
+    }
+    window.addEventListener("popstate", handleBackButton);
+
+    return () => {
+      window.removeEventListener("popstate", handleBackButton);
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [chatOpen, navigate]);
+
   if (isLoading || (!user && !hasFetched))
     return (
       <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100dvh-4rem)]">
@@ -86,13 +107,16 @@ const ConversationsPage = () => {
         </>
       ) : (
         <>
-          {chatOpen ? (
-            <div className="flex bg-base-100 w-full flex-col h-full">
-              <MessageListPanel />
-            </div>
-          ) : (
+          <div
+            className={`${
+              !chatOpen ? "hidden" : "flex"
+            } bg-base-100 w-full flex-col h-full `}
+          >
+            <MessageListPanel />
+          </div>
+          <div className={`${chatOpen ? "hidden" : "flex"} w-full h-full`}>
             <ConversationListPanel />
-          )}
+          </div>
         </>
       )}
     </div>

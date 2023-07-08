@@ -3,6 +3,8 @@ import MessagesList from "../../components/Conversations/MessagesList";
 import { Link } from "react-router-dom";
 import MessageInput from "../../components/Conversations/MessageInput";
 import { clearCurrentConversation } from "../../redux/slices/conversationSlice";
+import { useEffect, useState } from "react";
+import { getSocket } from "../../socketService";
 
 const MessageListPanel = () => {
   const dispatch = useDispatch();
@@ -12,6 +14,50 @@ const MessageListPanel = () => {
 
   const user = useSelector((state) => state.auth.user);
   const activeUsers = useSelector((state) => state.user.activeUsers);
+
+  const [typingUsers, setTypingUsers] = useState([]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on(
+        "typingUpdateToClient",
+        ({ conversation: convo, typingUser: typeUser }) => {
+          if (currentConversation._id === convo._id)
+            setTypingUsers((prev) => [typeUser, ...prev]);
+        }
+      );
+    }
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("typingUpdateToClient");
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on(
+        "notTypingUpdateToClient",
+        ({ conversation: convo, typingUser: typeUser }) => {
+          if (currentConversation._id === convo._id)
+            setTypingUsers((prev) =>
+              prev.filter((item) => item._id !== typeUser._id)
+            );
+        }
+      );
+    }
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("notTypingUpdateToClient");
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
 
   const getActiveStatus = (conversation) => {
     if (conversation.type === "Group") {
@@ -62,6 +108,14 @@ const MessageListPanel = () => {
     return names;
   };
 
+  const getTypingText = (conversation, typingUsers) => {
+    if (!typingUsers || typingUsers.length === 0) return null;
+    if (conversation.type === "Individual") return "Typing...";
+    return `${typingUsers[0].displayname.split(" ")[0]} is typing...`;
+  };
+
+  if (!currentConversation) return null;
+
   return (
     <div className="flex flex-col w-full h-full bg-base-200 lg:rounded-2xl overflow-hidden">
       <div className="flex bg-base-300 px-1 lg:px-4 py-2 items-center w-full">
@@ -105,7 +159,9 @@ const MessageListPanel = () => {
                   {getTitle(currentConversation)}
                 </h3>
                 <p className="text-xs leading-tight truncate w-full text-start">
-                  {currentConversation.type === "Group"
+                  {typingUsers && typingUsers.length > 0
+                    ? getTypingText(currentConversation, typingUsers)
+                    : currentConversation.type === "Group"
                     ? getParticipantNames(currentConversation)
                     : getActiveStatus(currentConversation)
                     ? "Active Now"

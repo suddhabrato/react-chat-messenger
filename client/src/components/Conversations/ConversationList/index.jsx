@@ -18,7 +18,7 @@ const ConversationList = () => {
   if (isLoading)
     return (
       <div className="bg-base-200 w-full h-full flex-col p-2 overflow-y-auto flex-nowrap rounded-box">
-        <Loader ball />
+        <Loader ball text={"Fetching your conversations..."} />
       </div>
     );
 

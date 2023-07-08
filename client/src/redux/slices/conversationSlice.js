@@ -133,6 +133,7 @@ export const conversationSlice = createSlice({
 
     builder.addCase(getAllConversations.pending, (state) => {
       state.isLoadingConversations = true;
+      state.currentConversation = null;
       state.messages = [];
     });
 

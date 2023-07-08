@@ -10,12 +10,17 @@ const initialState = {
   newGroupModalOpen: false,
   subscribedUsers: [],
   activeUsers: [],
+  personalisations: { theme: "light" },
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    toggleTheme: (state) => {
+      state.personalisations.theme =
+        state.personalisations?.theme === "light" ? "dark" : "light";
+    },
     subscribeToUsers: (state, { payload }) => {
       state.subscribedUsers = payload;
       if (state.subscribedUsers.length > 0)
@@ -83,6 +88,7 @@ export const {
   closeGroupModal,
   subscribeToUsers,
   setActiveUsers,
+  toggleTheme,
 } = userSlice.actions;
 
 export default userSlice.reducer;
