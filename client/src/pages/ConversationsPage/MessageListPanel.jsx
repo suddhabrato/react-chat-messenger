@@ -65,7 +65,11 @@ const MessageListPanel = () => {
   const getTypingText = (conversation, typingUsers) => {
     if (!typingUsers || typingUsers.length === 0) return null;
     if (conversation.type === "Individual") return "Typing...";
-    return `${typingUsers[0].displayname.split(" ")[0]} is typing...`;
+    return `${typingUsers[0].displayname.split(" ")[0]}${
+      typingUsers.length > 1
+        ? ` + ${typingUsers.length - 1} more are typing...`
+        : " is typing..."
+    }`;
   };
 
   if (!currentConversation) return null;
