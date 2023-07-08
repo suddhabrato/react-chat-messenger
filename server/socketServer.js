@@ -19,7 +19,9 @@ const SocketServer = (socket, io) => {
     );
 
     recipientUsers.forEach((user) =>
-      io.to(`${user.socketId}`).emit("addMessageToClient", msg)
+      io
+        .to(`${user.socketId}`)
+        .emit("addMessageToClient", { ...msg, userId: user.id })
     );
   });
 
@@ -31,7 +33,7 @@ const SocketServer = (socket, io) => {
     recipientUsers.forEach((user) =>
       io
         .to(`${user.socketId}`)
-        .emit("deleteMessageFromClient", { msg, conversation })
+        .emit("deleteMessageFromClient", { msg, conversation, userId: user.id })
     );
   });
 

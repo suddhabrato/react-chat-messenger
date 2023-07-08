@@ -25,7 +25,31 @@ const ConversationController = {
         })
         .sort("-updatedAt");
 
-      res.json({ conversations });
+      let newConversations = [];
+      for (let conversation of conversations) {
+        const convo = await Conversation.findById(conversation._id).populate(
+          "messages"
+        );
+        let unseenMessageCount = 0;
+
+        for (const message of convo.messages) {
+          const seenByUser = message.seen.some(
+            (viewer) => viewer.viewer.toString() === req.user._id.toString()
+          );
+
+          if (
+            !seenByUser &&
+            message.author._id.toString() !== req.user._id.toString()
+          )
+            unseenMessageCount++;
+        }
+        newConversations.push({
+          ...conversation.toObject(),
+          unseenMessageCount: unseenMessageCount,
+        });
+      }
+
+      res.json({ conversations: newConversations });
     } catch (err) {
       return res.status(500).json({ msg: err.message });
     }

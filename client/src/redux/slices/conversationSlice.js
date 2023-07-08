@@ -46,14 +46,20 @@ export const conversationSlice = createSlice({
 
         if (!existingConversation)
           state.conversationsList = [
-            payload.conversation,
+            { ...payload.conversation, unseenMessageCount: 0 },
             ...state.conversationsList,
           ];
         else
           state.conversationsList = state.conversationsList.map(
             (conversation) =>
               conversation._id === payload.conversation._id
-                ? { ...payload.conversation }
+                ? {
+                    ...payload.conversation,
+                    unseenMessageCount:
+                      payload.userId === payload.savedMessage.author._id
+                        ? conversation.unseenMessageCount
+                        : conversation.unseenMessageCount + 1,
+                  }
                 : { ...conversation }
           );
 
@@ -68,9 +74,22 @@ export const conversationSlice = createSlice({
           (message) => message._id !== payload.msg._id
         );
 
+      const userHasSeen = payload.msg.seen.find(
+        (user) =>
+          user.viewer === payload.userId &&
+          user.viewer !== payload.msg.author._id
+      );
+
       state.conversationsList = state.conversationsList.map((conversation) =>
         conversation._id === payload.conversation._id
-          ? { ...payload.conversation }
+          ? {
+              ...payload.conversation,
+              unseenMessageCount: conversation.unseenMessageCount
+                ? userHasSeen
+                  ? conversation.unseenMessageCount
+                  : conversation.unseenMessageCount - 1
+                : 0,
+            }
           : { ...conversation }
       );
     },
@@ -252,6 +271,17 @@ export const conversationSlice = createSlice({
         message._id === payload.message._id ? payload.message : message
       );
       emitEvent("updateSeen", payload.message);
+      state.conversationsList = state.conversationsList.map((conversation) =>
+        conversation._id === state.currentConversation._id
+          ? {
+              ...conversation,
+              unseenMessageCount: Math.max(
+                0,
+                conversation.unseenMessageCount - 1
+              ),
+            }
+          : conversation
+      );
     });
 
     builder.addCase(markMessageAsSeen.rejected, (state) => {

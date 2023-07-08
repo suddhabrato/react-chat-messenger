@@ -74,7 +74,7 @@ const ConversationListItem = ({ conversation }) => {
     }
   };
 
-  const unseenCount = Math.floor(Math.random() * 15);
+  const unseenCount = conversation.unseenMessageCount;
 
   if (!conversation || !user) return null;
 
