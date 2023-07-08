@@ -7,6 +7,7 @@ import {
   addMessage,
   removeMessage,
   updateSeenMessage,
+  updateTypingStatus,
 } from "./redux/slices/conversationSlice";
 import { setActiveUsers, subscribeToUsers } from "./redux/slices/userSlice";
 
@@ -124,6 +125,38 @@ const SocketClient = () => {
         socket.off("updateSeenOnClient");
       }
     };
+  }, [user]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on("typingUpdateToClient", (payload) => {
+        dispatch(updateTypingStatus({ ...payload, add: true }));
+      });
+    }
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("typingUpdateToClient");
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [user]);
+
+  useEffect(() => {
+    const socket = getSocket();
+    if (socket) {
+      socket.on("notTypingUpdateToClient", (payload) => {
+        dispatch(updateTypingStatus({ ...payload, remove: true }));
+      });
+    }
+    return () => {
+      const socket = getSocket();
+      if (socket) {
+        socket.off("notTypingUpdateToClient");
+      }
+    };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [user]);
 
   return;

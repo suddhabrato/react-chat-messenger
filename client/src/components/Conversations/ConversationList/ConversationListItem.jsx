@@ -3,8 +3,6 @@
 import { useDispatch, useSelector } from "react-redux";
 import { selectConversation } from "../../../redux/slices/conversationSlice";
 import { formatRelativeDate } from "../../../utils/DateTimeHelper";
-import { useEffect, useState } from "react";
-import { getSocket } from "../../../socketService";
 
 const ConversationListItem = ({ conversation }) => {
   const dispatch = useDispatch();
@@ -12,49 +10,6 @@ const ConversationListItem = ({ conversation }) => {
   const currentConversation = useSelector(
     (state) => state.conversation.currentConversation
   );
-  const [typingUsers, setTypingUsers] = useState([]);
-
-  useEffect(() => {
-    const socket = getSocket();
-    if (socket) {
-      socket.on(
-        "typingUpdateToClient",
-        ({ conversation: convo, typingUser: typeUser }) => {
-          if (conversation._id === convo._id)
-            setTypingUsers((prev) => [typeUser, ...prev]);
-        }
-      );
-    }
-    return () => {
-      const socket = getSocket();
-      if (socket) {
-        socket.off("typingUpdateToClient");
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
-
-  useEffect(() => {
-    const socket = getSocket();
-    if (socket) {
-      socket.on(
-        "notTypingUpdateToClient",
-        ({ conversation: convo, typingUser: typeUser }) => {
-          if (conversation._id === convo._id)
-            setTypingUsers((prev) =>
-              prev.filter((item) => item._id !== typeUser._id)
-            );
-        }
-      );
-    }
-    return () => {
-      const socket = getSocket();
-      if (socket) {
-        socket.off("notTypingUpdateToClient");
-      }
-    };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
 
   const activeUsers = useSelector((state) => state.user.activeUsers);
 
@@ -156,13 +111,13 @@ const ConversationListItem = ({ conversation }) => {
           <h3 className="text-md w-full truncate">{getTitle(conversation)}</h3>
           <p
             className={`text-sm h-6 truncate w-full ${
-              typingUsers && typingUsers.length > 0
+              conversation.typingUsers && conversation.typingUsers.length > 0
                 ? "font-medium text-success"
                 : "font-extralight"
             }`}
           >
-            {typingUsers && typingUsers.length
-              ? getTypingText(conversation, typingUsers)
+            {conversation.typingUsers && conversation.typingUsers.length
+              ? getTypingText(conversation, conversation.typingUsers)
               : getNotif(conversation)}
           </p>
         </div>

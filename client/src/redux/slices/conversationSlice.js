@@ -25,6 +25,53 @@ export const conversationSlice = createSlice({
     creatingNewGroupConversation: false,
   },
   reducers: {
+    updateTypingStatus: (state, { payload }) => {
+      if (payload.add) {
+        state.conversationsList = state.conversationsList.map((conversation) =>
+          conversation._id === payload.conversation._id
+            ? {
+                ...conversation,
+                typingUsers: conversation.typingUsers
+                  ? [payload.typingUser, ...conversation.typingUsers]
+                  : [payload.typingUser],
+              }
+            : conversation
+        );
+
+        if (state.currentConversation?._id === payload.conversation._id)
+          state.currentConversation = {
+            ...state.currentConversation,
+            typingUsers: state.currentConversation.typingUsers
+              ? [payload.typingUser, ...state.currentConversation.typingUsers]
+              : [payload.typingUser],
+          };
+      }
+
+      if (payload.remove) {
+        state.conversationsList = state.conversationsList.map((conversation) =>
+          conversation._id === payload.conversation._id
+            ? {
+                ...conversation,
+                typingUsers: conversation.typingUsers?.length
+                  ? conversation.typingUsers.filter(
+                      (typingUser) => typingUser._id !== payload.typingUser._id
+                    )
+                  : [],
+              }
+            : conversation
+        );
+
+        if (state.currentConversation?._id === payload.conversation._id)
+          state.currentConversation = {
+            ...state.currentConversation,
+            typingUsers: state.currentConversation.typingUsers
+              ? state.currentConversation.typingUsers.filter(
+                  (typingUser) => typingUser._id !== payload.typingUser._id
+                )
+              : [],
+          };
+      }
+    },
     updateSeenMessage: (state, { payload }) => {
       if (payload)
         state.messages = state.messages.map((message) =>
@@ -301,6 +348,7 @@ export const {
   removeMessage,
   addGroupConversation,
   updateSeenMessage,
+  updateTypingStatus,
 } = conversationSlice.actions;
 
 export default conversationSlice.reducer;
