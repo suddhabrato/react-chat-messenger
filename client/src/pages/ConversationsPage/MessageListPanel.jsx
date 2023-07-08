@@ -23,7 +23,7 @@ const MessageListPanel = () => {
       socket.on(
         "typingUpdateToClient",
         ({ conversation: convo, typingUser: typeUser }) => {
-          if (currentConversation._id === convo._id)
+          if (currentConversation?._id === convo._id)
             setTypingUsers((prev) => [typeUser, ...prev]);
         }
       );
@@ -35,7 +35,7 @@ const MessageListPanel = () => {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, currentConversation]);
 
   useEffect(() => {
     const socket = getSocket();
@@ -43,7 +43,7 @@ const MessageListPanel = () => {
       socket.on(
         "notTypingUpdateToClient",
         ({ conversation: convo, typingUser: typeUser }) => {
-          if (currentConversation._id === convo._id)
+          if (currentConversation?._id === convo._id)
             setTypingUsers((prev) =>
               prev.filter((item) => item._id !== typeUser._id)
             );
@@ -57,7 +57,7 @@ const MessageListPanel = () => {
       }
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [user]);
+  }, [user, currentConversation]);
 
   const getActiveStatus = (conversation) => {
     if (conversation.type === "Group") {
@@ -109,6 +109,7 @@ const MessageListPanel = () => {
   };
 
   const getTypingText = (conversation, typingUsers) => {
+    console.log(conversation, typingUsers);
     if (!typingUsers || typingUsers.length === 0) return null;
     if (conversation.type === "Individual") return "Typing...";
     return `${typingUsers[0].displayname.split(" ")[0]} is typing...`;
