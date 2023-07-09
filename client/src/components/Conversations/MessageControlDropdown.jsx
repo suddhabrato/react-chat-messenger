@@ -3,6 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { deleteMessage } from "../../redux/actions/conversationActions";
 import { useState } from "react";
 import { setCreatingNewConversation } from "../../redux/slices/conversationSlice";
+import { showMessageInfoModal } from "./MessageInfoModal";
+import { setCurrentMessage } from "../../redux/slices/userSlice";
+
 const MessageControlDropdown = ({ self, last, message }) => {
   const conversation = useSelector(
     (state) => state.conversation.currentConversation
@@ -85,7 +88,12 @@ const MessageControlDropdown = ({ self, last, message }) => {
             </li>
           )}
           {self && (
-            <li>
+            <li
+              onClick={() => {
+                dispatch(setCurrentMessage(message));
+                showMessageInfoModal();
+              }}
+            >
               <a>
                 <svg
                   xmlns="http://www.w3.org/2000/svg"

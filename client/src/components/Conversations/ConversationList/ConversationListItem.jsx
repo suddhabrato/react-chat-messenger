@@ -87,50 +87,70 @@ const ConversationListItem = ({ conversation }) => {
   };
 
   return (
-    <li className="w-full">
-      <div
-        className={`flex gap-4 justify-start w-full ${
-          activeItem ? "active" : ""
-        }`}
-        onClick={() =>
-          !activeItem && dispatch(selectConversation(conversation))
-        }
-      >
-        <div>
-          <div
-            className={`avatar ${
-              getActiveStatus(conversation) ? "online" : "offline"
-            }`}
-          >
-            <div className="w-14 rounded-full">
-              <img src={getAvatar(conversation)} referrerPolicy="no-referrer" />
+    <>
+      <li className="w-full group">
+        <div
+          className={`flex gap-4 justify-start w-full active:text-neutral-content ${
+            activeItem ? "active" : ""
+          }`}
+          onClick={() =>
+            !activeItem && dispatch(selectConversation(conversation))
+          }
+        >
+          <div>
+            <div
+              className={`avatar ${
+                getActiveStatus(conversation) ? "online" : "offline"
+              }`}
+            >
+              <div className="w-14 rounded-full">
+                <img
+                  src={getAvatar(conversation)}
+                  referrerPolicy="no-referrer"
+                />
+              </div>
             </div>
           </div>
+          <div className="flex flex-col w-full overflow-x-hidden">
+            <h3
+              className={`text-md w-full truncate ${
+                unseenCount > 0
+                  ? activeItem
+                    ? "font-medium"
+                    : "text-accent-content font-medium"
+                  : ""
+              } group-active:text-neutral-content`}
+            >
+              {getTitle(conversation)}
+            </h3>
+            <p
+              className={`text-sm h-6 truncate w-full ${
+                conversation.typingUsers && conversation.typingUsers.length > 0
+                  ? "font-medium text-success"
+                  : unseenCount > 0
+                  ? activeItem
+                    ? "font-normal"
+                    : "font-normal text-accent-content "
+                  : "font-extralight"
+              } group-active:text-neutral-content`}
+            >
+              {conversation.typingUsers && conversation.typingUsers.length
+                ? getTypingText(conversation, conversation.typingUsers)
+                : getNotif(conversation)}
+            </p>
+          </div>
+          <div className="flex flex-col h-12 text-xs items-end justify-between">
+            {formatRelativeDate(new Date(conversation.updatedAt))}
+            {unseenCount > 0 && (
+              <div className="badge badge-primary badge-sm min-h-[22px] min-w-[22px] text-xs text-white">
+                {unseenCount}
+              </div>
+            )}
+          </div>
         </div>
-        <div className="flex flex-col w-full overflow-x-hidden">
-          <h3 className="text-md w-full truncate">{getTitle(conversation)}</h3>
-          <p
-            className={`text-sm h-6 truncate w-full ${
-              conversation.typingUsers && conversation.typingUsers.length > 0
-                ? "font-medium text-success"
-                : "font-extralight"
-            }`}
-          >
-            {conversation.typingUsers && conversation.typingUsers.length
-              ? getTypingText(conversation, conversation.typingUsers)
-              : getNotif(conversation)}
-          </p>
-        </div>
-        <div className="flex flex-col h-12 text-xs items-end justify-between">
-          {formatRelativeDate(new Date(conversation.updatedAt))}
-          {unseenCount > 0 && (
-            <div className="badge badge-primary badge-sm min-h-[22px] min-w-[22px] text-xs text-white">
-              {unseenCount}
-            </div>
-          )}
-        </div>
-      </div>
-    </li>
+      </li>
+      <div className="divider my-0 px-2 -mt-0.5"></div>
+    </>
   );
 };
 

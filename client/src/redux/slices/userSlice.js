@@ -11,12 +11,22 @@ const initialState = {
   subscribedUsers: [],
   activeUsers: [],
   personalisations: { theme: "light" },
+  currentMessageInfo: null,
+  messageInfoModalOpen: false,
 };
 
 export const userSlice = createSlice({
   name: "user",
   initialState,
   reducers: {
+    setCurrentMessage: (state, { payload }) => {
+      state.currentMessageInfo = payload;
+      state.messageInfoModalOpen = true;
+    },
+    clearCurrentMessage: (state) => {
+      state.currentMessageInfo = null;
+      state.messageInfoModalOpen = false;
+    },
     toggleTheme: (state) => {
       state.personalisations.theme =
         state.personalisations?.theme === "light" ? "dark" : "light";
@@ -89,6 +99,8 @@ export const {
   subscribeToUsers,
   setActiveUsers,
   toggleTheme,
+  setCurrentMessage,
+  clearCurrentMessage,
 } = userSlice.actions;
 
 export default userSlice.reducer;

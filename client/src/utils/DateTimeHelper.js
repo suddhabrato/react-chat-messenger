@@ -29,6 +29,32 @@ export function formatRelativeDate(date) {
   }
 }
 
+export function formatRelativeDateSeen(date) {
+  const now = new Date();
+
+  if (isSameDate(now, date)) {
+    return "Today";
+  } else if (isYesterday(now, date)) {
+    return "Yesterday";
+  } else if (isWithinAWeek(now, date)) {
+    const weekday = [
+      "Sunday",
+      "Monday",
+      "Tuesday",
+      "Wednesday",
+      "Thursday",
+      "Friday",
+      "Saturday",
+    ];
+    return weekday[date.getDay()];
+  } else {
+    const day = date.getDate().toString().padStart(2, "0");
+    const month = (date.getMonth() + 1).toString().padStart(2, "0");
+    const year = date.getFullYear().toString().slice(-2);
+    return `${day}/${month}/${year}`;
+  }
+}
+
 // Helper function to check if two dates are the same (ignoring time)
 function isSameDate(date1, date2) {
   return (

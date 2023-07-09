@@ -140,6 +140,7 @@ const MessageInput = () => {
       </button>
 
       <input
+        enterKeyHint="Send"
         autoFocus={isDesktop}
         type="text"
         placeholder="Type a message"

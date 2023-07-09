@@ -9,12 +9,14 @@ import UserSearchModal from "../../components/Conversations/UserSearchModal";
 import EmptyState from "../../components/EmptyState";
 import placeholder from "../../assets/ConversationEmptyState.svg";
 import {
+  clearCurrentMessage,
   closeGroupModal,
   closeSearchModal,
 } from "../../redux/slices/userSlice";
 import { getAllConversations } from "../../redux/actions/conversationActions";
 import { useNavigate } from "react-router";
 import CreateGroupModal from "../../components/Conversations/CreateGroupModal";
+import MessageInfoModal from "../../components/Conversations/MessageInfoModal";
 
 // eslint-disable-next-line react/prop-types
 const ConversationsPage = () => {
@@ -29,6 +31,9 @@ const ConversationsPage = () => {
   );
   const isSearchModalOpen = useSelector((state) => state.user.searchModalOpen);
   const isGroupModalOpen = useSelector((state) => state.user.newGroupModalOpen);
+  const isMessageInfoModalOpen = useSelector(
+    (state) => state.user.messageInfoModalOpen
+  );
 
   useEffect(() => {
     if (hasFetched) {
@@ -40,10 +45,11 @@ const ConversationsPage = () => {
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.keyCode === 27) {
-        if (!isSearchModalOpen && !isGroupModalOpen)
+        if (!isSearchModalOpen && !isGroupModalOpen && !isMessageInfoModalOpen)
           dispatch(clearCurrentConversation());
         if (isSearchModalOpen) dispatch(closeSearchModal());
         if (isGroupModalOpen) dispatch(closeGroupModal());
+        if (isMessageInfoModalOpen) dispatch(clearCurrentMessage());
       }
     };
 
@@ -53,7 +59,7 @@ const ConversationsPage = () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSearchModalOpen]);
+  }, [isSearchModalOpen, isGroupModalOpen, isMessageInfoModalOpen]);
 
   useEffect(() => {
     const handleBackButton = () => {
@@ -85,6 +91,7 @@ const ConversationsPage = () => {
 
   return (
     <div className="flex lg:justify-evenly max-w-screen lg:p-2 h-[calc(100dvh-4rem)]">
+      <MessageInfoModal />
       <UserSearchModal />
       <CreateGroupModal />
       {isDesktop ? (

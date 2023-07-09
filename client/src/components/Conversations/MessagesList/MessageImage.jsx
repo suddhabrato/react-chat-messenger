@@ -4,6 +4,7 @@ import { useDispatch, useSelector } from "react-redux";
 import MessageControlDropdown from "../MessageControlDropdown";
 import { useEffect, useRef } from "react";
 import { markMessageAsSeen } from "../../../redux/actions/conversationActions";
+import { formatRelativeDateSeen } from "../../../utils/DateTimeHelper";
 
 const options = { hour: "2-digit", minute: "2-digit" };
 const MessageImage = ({
@@ -69,24 +70,21 @@ const MessageImage = ({
       if (seenUser)
         return (
           "Seen: " +
-          new Date(seenUser.viewedAt).toLocaleTimeString("en-US", options)
+          `${formatRelativeDateSeen(new Date(seenUser.viewedAt))} at ${new Date(
+            seenUser.viewedAt
+          ).toLocaleTimeString("en-US", options)}`
         );
       return null;
     }
-    const seenUsers = message.seen
-      .filter(
-        (seenUser) =>
-          seenUser.viewer._id !== message.author._id &&
-          seenUser.viewer._id !== user._id
-      )
-      .map(
-        (seenUser) =>
-          `${seenUser.viewer.displayname.split(" ")[0]} (${new Date(
-            seenUser.viewedAt
-          ).toLocaleTimeString("en-US", options)})`
-      )
-      .join(", ");
-    if (seenUsers) return "Seen by: " + seenUsers;
+    const seenUsers = message.seen.filter(
+      (seenUser) =>
+        seenUser.viewer._id !== message.author._id &&
+        seenUser.viewer._id !== user._id
+    );
+    if (seenUsers?.length)
+      return `Seen by: ${seenUsers[0].viewer.displayname.split(" ")[0]}${
+        seenUsers.length > 1 ? ` and ${seenUsers.length - 1} more` : ""
+      }`;
     return null;
   };
 
@@ -118,7 +116,7 @@ const MessageImage = ({
         <div className="flex break-all">{body}</div>
       </div>
       {seenString() && (
-        <div className="chat-footer opacity-50">{seenString()}</div>
+        <div className="chat-footer opacity-50 text-end">{seenString()}</div>
       )}
     </div>
   );
