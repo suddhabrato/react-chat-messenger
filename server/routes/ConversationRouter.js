@@ -4,6 +4,12 @@ const ConversationController = require("../controllers/ConversationController");
 
 router.get("/", authMiddleware, ConversationController.getConversations);
 
+router.get(
+  "/search",
+  authMiddleware,
+  ConversationController.searchConversations
+);
+
 router.get("/:convId", authMiddleware, ConversationController.getMessages);
 
 router.post(

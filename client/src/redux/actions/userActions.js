@@ -12,3 +12,15 @@ export const getSearchUsers = createAsyncThunk(
     }
   }
 );
+
+export const getSearchConversations = createAsyncThunk(
+  "getSearchConversations",
+  async (data) => {
+    try {
+      const res = await api.get(`/conversations/search?searchTerm=${data}`);
+      return res.data;
+    } catch (err) {
+      console.error(err);
+    }
+  }
+);

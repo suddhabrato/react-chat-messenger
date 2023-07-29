@@ -139,7 +139,7 @@ const ConversationListItem = ({ conversation }) => {
                 : getNotif(conversation)}
             </p>
           </div>
-          <div className="flex flex-col h-12 text-xs items-end justify-between">
+          <div className="flex flex-col h-11 text-xs items-end justify-between">
             {formatRelativeDate(new Date(conversation.updatedAt))}
             {unseenCount > 0 && (
               <div className="badge badge-primary badge-sm min-h-[22px] min-w-[22px] text-xs text-white">
@@ -149,7 +149,7 @@ const ConversationListItem = ({ conversation }) => {
           </div>
         </div>
       </li>
-      <div className="divider my-0 px-2 -mt-0.5"></div>
+      <div className="divider my-0 px-2 -mt-0.5 h-auto"></div>
     </>
   );
 };

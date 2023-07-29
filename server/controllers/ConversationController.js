@@ -55,6 +55,101 @@ const ConversationController = {
     }
   },
 
+  searchConversations: async (req, res) => {
+    try {
+      const users = await User.find({
+        $and: [
+          {
+            $or: [
+              { username: { $regex: new RegExp(req.query.searchTerm, "i") } },
+              {
+                displayname: { $regex: new RegExp(req.query.searchTerm, "i") },
+              },
+              { email: { $regex: new RegExp(req.query.searchTerm, "i") } },
+            ],
+          },
+          { _id: { $ne: req.user._id } },
+        ],
+      })
+        .limit(15)
+        .select("displayname username avatar");
+
+      const searchParticipants = users.map(
+        (user) => new mongoose.Types.ObjectId(user._id)
+      );
+
+      const conversations = await Conversation.find({
+        $and: [
+          { _id: { $in: req.user.conversations } },
+          {
+            $or: [
+              {
+                type: "Group",
+                title: { $regex: new RegExp(req.query.searchTerm, "i") },
+              },
+              {
+                type: "Individual",
+                participants: { $in: searchParticipants },
+              },
+            ],
+          },
+        ],
+      })
+        .limit(4)
+        .populate("participants")
+        .populate({
+          path: "messages",
+          options: { sort: { createdAt: -1 } },
+          populate: { path: "author", select: "displayname" },
+          perDocumentLimit: 1,
+        })
+        .sort("-updatedAt");
+
+      let participantsList = [];
+      let newConversations = [];
+      for (let conversation of conversations) {
+        const convo = await Conversation.findById(conversation._id).populate(
+          "messages"
+        );
+        let unseenMessageCount = 0;
+
+        if (conversation.type === "Individual") {
+          if (
+            conversation.participants[0]._id.toString() !==
+            req.user._id.toString()
+          )
+            participantsList.push(conversation.participants[0]._id.toString());
+          else
+            participantsList.push(conversation.participants[1]._id.toString());
+        }
+
+        for (const message of convo.messages) {
+          const seenByUser = message.seen.some(
+            (viewer) => viewer.viewer.toString() === req.user._id.toString()
+          );
+
+          if (
+            !seenByUser &&
+            message.author._id.toString() !== req.user._id.toString()
+          )
+            unseenMessageCount++;
+        }
+        newConversations.push({
+          ...conversation.toObject(),
+          unseenMessageCount: unseenMessageCount,
+        });
+      }
+
+      const filteredUsers = users.filter(
+        (user) => !participantsList.includes(user._id.toString())
+      );
+
+      res.json({ conversations: newConversations, users: filteredUsers });
+    } catch (err) {
+      return res.status(500).json({ msg: err.message });
+    }
+  },
+
   getConversationByParticpantLookup: async (req, res) => {
     try {
       const { recipients } = req.body;

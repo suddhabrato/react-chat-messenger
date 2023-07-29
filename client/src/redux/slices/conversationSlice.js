@@ -85,6 +85,14 @@ export const conversationSlice = createSlice({
           state.messages = state.messages.sort(
             (a, b) => new Date(b.createdAt) - new Date(a.createdAt)
           );
+
+          state.currentConversation = {
+            ...state.currentConversation,
+            unseenMessageCount:
+              payload.userId === payload.savedMessage.author._id
+                ? state.currentConversation.unseenMessageCount + 0
+                : state.currentConversation.unseenMessageCount + 1,
+          };
         }
 
         const existingConversation = state.conversationsList.find(
@@ -116,16 +124,25 @@ export const conversationSlice = createSlice({
       }
     },
     removeMessage: (state, { payload }) => {
-      if (state.currentConversation?._id === payload.conversation._id)
-        state.messages = state.messages.filter(
-          (message) => message._id !== payload.msg._id
-        );
-
       const userHasSeen = payload.msg.seen.find(
         (user) =>
           user.viewer === payload.userId &&
           user.viewer !== payload.msg.author._id
       );
+
+      if (state.currentConversation?._id === payload.conversation._id) {
+        state.messages = state.messages.filter(
+          (message) => message._id !== payload.msg._id
+        );
+        state.currentConversation = {
+          ...state.currentConversation,
+          unseenMessageCount: state.currentConversation.unseenMessageCount
+            ? userHasSeen
+              ? state.currentConversation.unseenMessageCount
+              : state.currentConversation.unseenMessageCount - 1
+            : 0,
+        };
+      }
 
       state.conversationsList = state.conversationsList.map((conversation) =>
         conversation._id === payload.conversation._id
@@ -330,6 +347,14 @@ export const conversationSlice = createSlice({
             }
           : conversation
       );
+
+      state.currentConversation = {
+        ...state.currentConversation,
+        unseenMessageCount: Math.max(
+          0,
+          state.currentConversation.unseenMessageCount - 1
+        ),
+      };
     });
 
     builder.addCase(markMessageAsSeen.rejected, (state) => {

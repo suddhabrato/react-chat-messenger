@@ -98,7 +98,7 @@ const MessageListPanel = () => {
               />
             </svg>
           </button>
-          <Link className="btn btn-ghost normal-case font-normal py-2 h-auto rounded-xl truncate w-full">
+          <Link className="btn btn-ghost no-animation normal-case font-normal py-2 h-auto rounded-xl truncate w-full">
             <div className="flex items-center gap-3 w-full">
               <div
                 className={`avatar ${

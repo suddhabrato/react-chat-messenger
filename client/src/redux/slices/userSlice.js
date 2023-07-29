@@ -1,11 +1,14 @@
 import { createSlice } from "@reduxjs/toolkit";
-import { getSearchUsers } from "../actions/userActions";
+import { getSearchConversations, getSearchUsers } from "../actions/userActions";
 import { emitEvent } from "../../socketService";
 
 const initialState = {
   searchText: "",
+  searchConversationText: "",
   searchResults: [],
+  searchConversationResults: null,
   isLoading: false,
+  isLoadingConversations: false,
   searchModalOpen: false,
   newGroupModalOpen: false,
   subscribedUsers: [],
@@ -71,6 +74,14 @@ export const userSlice = createSlice({
       state.searchResults = [];
       state.isLoading = false;
     },
+    setConversationSearchText: (state, { payload }) => {
+      state.searchConversationText = payload;
+    },
+    clearConversationSearch: (state) => {
+      state.searchConversationText = "";
+      state.searchConversationResults = null;
+      state.isLoadingConversations = false;
+    },
   },
   extraReducers: (builder) => {
     builder.addCase(getSearchUsers.pending, (state) => {
@@ -85,6 +96,20 @@ export const userSlice = createSlice({
     builder.addCase(getSearchUsers.rejected, (state) => {
       state.isLoading = false;
       state.searchResults = [];
+    });
+
+    builder.addCase(getSearchConversations.pending, (state) => {
+      state.isLoadingConversations = true;
+    });
+
+    builder.addCase(getSearchConversations.fulfilled, (state, { payload }) => {
+      state.isLoadingConversations = false;
+      state.searchConversationResults = payload;
+    });
+
+    builder.addCase(getSearchConversations.rejected, (state) => {
+      state.isLoadingConversations = false;
+      state.searchConversationResults = null;
     });
   },
 });
@@ -101,6 +126,8 @@ export const {
   toggleTheme,
   setCurrentMessage,
   clearCurrentMessage,
+  setConversationSearchText,
+  clearConversationSearch,
 } = userSlice.actions;
 
 export default userSlice.reducer;

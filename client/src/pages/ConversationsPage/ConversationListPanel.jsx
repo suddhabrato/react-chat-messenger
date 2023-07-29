@@ -1,10 +1,40 @@
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import ConversationList from "../../components/Conversations/ConversationList";
 import { showModal } from "../../components/Conversations/UserSearchModal";
-import { openSearchModal } from "../../redux/slices/userSlice";
+import {
+  clearConversationSearch,
+  openSearchModal,
+  setConversationSearchText,
+} from "../../redux/slices/userSlice";
+import { useEffect, useState } from "react";
+import { getSearchConversations } from "../../redux/actions/userActions";
 
 const ConversationListPanel = () => {
   const dispatch = useDispatch();
+  const [searchTimeout, setSearchTimeout] = useState(null);
+  const searchText = useSelector((state) => state.user.searchConversationText);
+
+  useEffect(() => {
+    dispatch(clearConversationSearch());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const handleSearchChange = (e) => {
+    dispatch(setConversationSearchText(e.target.value));
+    clearTimeout(searchTimeout);
+
+    if (e.target.value === "") {
+      dispatch(clearConversationSearch());
+      return;
+    }
+
+    setSearchTimeout(
+      setTimeout(() => {
+        dispatch(getSearchConversations(e.target.value));
+      }, 500)
+    );
+  };
+
   return (
     <div className="flex bg-base-100 w-full lg:w-1/3 lg:max-w-md flex-col h-full p-2">
       <h2 className="text-3xl font-semibold mx-2 mt-2">Conversations</h2>
@@ -34,25 +64,48 @@ const ConversationListPanel = () => {
         <div className="form-control w-full">
           <div className="input-group input-group-sm w-full justify-center">
             <input
+              value={searchText}
+              onChange={handleSearchChange}
               type="text"
-              placeholder="Search…"
+              placeholder="Search or start a new conversation"
               className="input input-sm focus:outline-none bg-base-200 w-5/6 focus:bg-base-100 focus:border-2 border-base-200 transition-all duration-300"
             />
-            <button className="btn btn-sm btn-square">
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth="2"
-                  d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
-                />
-              </svg>
+            <button
+              className="btn btn-sm btn-square"
+              onClick={() => searchText && dispatch(clearConversationSearch())}
+            >
+              {searchText ? (
+                <svg
+                  className="h-5 w-5"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth={2}
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  aria-hidden="true"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              ) : (
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-5 w-5"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth="2"
+                    d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"
+                  />
+                </svg>
+              )}
             </button>
           </div>
         </div>

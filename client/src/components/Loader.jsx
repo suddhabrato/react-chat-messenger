@@ -1,9 +1,17 @@
 /* eslint-disable react/prop-types */
-const Loader = ({ spinner, ring, ball, bars, infinity, text }) => {
+const Loader = ({ spinner, ring, ball, bars, infinity, text, small }) => {
   if (spinner)
     return (
-      <div className="flex flex-col w-full h-full justify-center items-center">
-        <span className="loading loading-spinner loading-lg"></span>
+      <div
+        className={`flex flex-col w-full ${
+          small ? "h-24" : "h-full"
+        } justify-center items-center`}
+      >
+        <span
+          className={`loading loading-spinner ${
+            small ? "loading-sm" : "loading-lg"
+          }`}
+        ></span>
         <p className="animate-pulse">{text}</p>
       </div>
     );

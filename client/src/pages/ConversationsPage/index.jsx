@@ -9,6 +9,7 @@ import UserSearchModal from "../../components/Conversations/UserSearchModal";
 import EmptyState from "../../components/EmptyState";
 import placeholder from "../../assets/ConversationEmptyState.svg";
 import {
+  clearConversationSearch,
   clearCurrentMessage,
   closeGroupModal,
   closeSearchModal,
@@ -34,6 +35,7 @@ const ConversationsPage = () => {
   const isMessageInfoModalOpen = useSelector(
     (state) => state.user.messageInfoModalOpen
   );
+  const searchText = useSelector((state) => state.user.searchConversationText);
 
   useEffect(() => {
     if (hasFetched) {
@@ -45,8 +47,14 @@ const ConversationsPage = () => {
   useEffect(() => {
     const handleKeyPress = (event) => {
       if (event.keyCode === 27) {
-        if (!isSearchModalOpen && !isGroupModalOpen && !isMessageInfoModalOpen)
+        if (
+          !isSearchModalOpen &&
+          !isGroupModalOpen &&
+          !isMessageInfoModalOpen
+        ) {
           dispatch(clearCurrentConversation());
+          if (searchText) dispatch(clearConversationSearch());
+        }
         if (isSearchModalOpen) dispatch(closeSearchModal());
         if (isGroupModalOpen) dispatch(closeGroupModal());
         if (isMessageInfoModalOpen) dispatch(clearCurrentMessage());
@@ -59,7 +67,7 @@ const ConversationsPage = () => {
       window.removeEventListener("keydown", handleKeyPress);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isSearchModalOpen, isGroupModalOpen, isMessageInfoModalOpen]);
+  }, [isSearchModalOpen, isGroupModalOpen, isMessageInfoModalOpen, searchText]);
 
   useEffect(() => {
     const handleBackButton = () => {
