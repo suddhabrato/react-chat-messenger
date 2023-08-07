@@ -5,6 +5,7 @@ import MessageControlDropdown from "../MessageControlDropdown";
 import { useEffect, useRef } from "react";
 import { markMessageAsSeen } from "../../../redux/actions/conversationActions";
 import { formatRelativeDateSeen } from "../../../utils/DateTimeHelper";
+import { to_Decrypt } from "../../../utils/aes";
 
 const options = { hour: "2-digit", minute: "2-digit" };
 const MessageImage = ({
@@ -113,7 +114,7 @@ const MessageImage = ({
             src={image.imageUrl}
           />
         ))}
-        <div className="flex break-all">{body}</div>
+        <div className="flex break-all">{to_Decrypt(body, sentTime)}</div>
       </div>
       {seenString() && (
         <div className="chat-footer opacity-50 text-end">{seenString()}</div>

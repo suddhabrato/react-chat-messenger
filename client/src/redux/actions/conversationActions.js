@@ -1,6 +1,7 @@
 import { createAsyncThunk } from "@reduxjs/toolkit";
 import api from "../../utils/axios";
 import axios from "axios";
+import { to_Encrypt } from "../../utils/aes";
 
 export const lookUpConversationByParticipants = createAsyncThunk(
   "lookUpConversationByParticipants",
@@ -62,17 +63,16 @@ export const createNewMessage = createAsyncThunk(
   async (data) => {
     try {
       const { recipients, media, convId, text, type } = data;
-
       let uploadedImages = [];
 
       if (media.length > 0) {
         uploadedImages = await uploadImages(media);
       }
-
+      const encText = to_Encrypt(text);
       const body = {
         recipients,
         convId,
-        text,
+        text: encText,
         media: uploadedImages,
         type,
       };

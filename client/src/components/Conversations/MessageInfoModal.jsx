@@ -1,6 +1,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { clearCurrentMessage } from "../../redux/slices/userSlice";
 import { formatRelativeDateSeen } from "../../utils/DateTimeHelper";
+import { to_Decrypt } from "../../utils/aes";
 
 /* eslint-disable react-refresh/only-export-components */
 export const showMessageInfoModal = () => {
@@ -33,10 +34,14 @@ const MessageInfoModal = () => {
                     src={image.imageUrl}
                   />
                 ))}
-                <div className="flex break-all">{message?.text}</div>
+                <div className="flex break-all">
+                  {to_Decrypt(message?.text, message?.createdAt)}
+                </div>
               </div>
             ) : (
-              <div className="chat-bubble">{message?.text}</div>
+              <div className="chat-bubble">
+                {to_Decrypt(message?.text, message?.createdAt)}
+              </div>
             )}
           </div>
         </div>

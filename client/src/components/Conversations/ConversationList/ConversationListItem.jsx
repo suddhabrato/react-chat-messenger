@@ -3,6 +3,7 @@
 import { useDispatch, useSelector } from "react-redux";
 import { selectConversation } from "../../../redux/slices/conversationSlice";
 import { formatRelativeDate } from "../../../utils/DateTimeHelper";
+import { to_Decrypt } from "../../../utils/aes";
 
 const ConversationListItem = ({ conversation }) => {
   const dispatch = useDispatch();
@@ -54,10 +55,14 @@ const ConversationListItem = ({ conversation }) => {
 
     const message = conversation.messages[0];
     if (message.text) {
-      if (message.author._id === user._id) return `You: ${message.text}`;
+      if (message.author._id === user._id)
+        return `You: ${to_Decrypt(message.text, message.createdAt)}`;
       else if (conversation.type === "Group")
-        return `${message.author.displayname}: ${message.text}`;
-      else return message.text;
+        return `${message.author.displayname}: ${to_Decrypt(
+          message.text,
+          message.createdAt
+        )}`;
+      else return to_Decrypt(message.text, message.createdAt);
     } else if (message.media?.length > 0) {
       if (message.author._id === user._id)
         return `You sent ${message.media.length} ${
