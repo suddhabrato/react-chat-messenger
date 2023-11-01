@@ -2,6 +2,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 import { logOut, signInWithGoogle } from "../../redux/actions/authActions";
 import { toggleTheme } from "../../redux/slices/userSlice";
+import IIESTLogo from "../../assets/download.png";
 
 const Navbar = () => {
   const dispatch = useDispatch();
@@ -11,23 +12,11 @@ const Navbar = () => {
 
   document.documentElement.setAttribute("data-theme", theme);
   return (
-    <div className="navbar bg-base-100 sticky top-0 z-50 backdrop-blur bg-opacity-60 lg:px-8 h-16 box-border">
+    <div className="navbar bg-base-100 sticky top-0 z-50 backdrop-blur bg-opacity-40 lg:px-8 h-16 box-border">
       <div className="navbar-start">
-        <Link to="/" className="btn btn-ghost normal-case text-xl">
-          <svg
-            className="h-8 w-8"
-            xmlns="http://www.w3.org/2000/svg"
-            width="2485"
-            height="2500"
-            viewBox="96 93 322 324"
-            id="messenger"
-          >
-            <path
-              fill="#0084ff"
-              d="M257 93c-88.918 0-161 67.157-161 150 0 47.205 23.412 89.311 60 116.807V417l54.819-30.273C225.449 390.801 240.948 393 257 393c88.918 0 161-67.157 161-150S345.918 93 257 93zm16 202l-41-44-80 44 88-94 42 44 79-44-88 94z"
-            ></path>
-          </svg>{" "}
-          Messenger
+        <Link to="/" className="btn btn-ghost normal-case text-xl font-medium">
+          <img src={IIESTLogo} className="h-9 w-9 mr-1 rounded opacity-75" />
+          IIESTS Support
         </Link>
       </div>
       {hasFetched && (

@@ -10,7 +10,7 @@ const LoginPage = () => {
     <div
       className="hero min-h-screen -mt-16"
       style={{
-        backgroundImage: `url("https://images.pexels.com/photos/6146933/pexels-photo-6146933.jpeg?auto=compress&cs=tinysrgb&w=1920&h=1080&dpr=1")`,
+        backgroundImage: `url("https://res.cloudinary.com/dxsb72gax/image/upload/v1698869699/1650990306678_cn9zfj.jpg")`,
       }}
     >
       <div className="hero-overlay bg-opacity-60"></div>
@@ -20,9 +20,8 @@ const LoginPage = () => {
             {user ? `Welcome ${user.displayname}` : "Hello there"}
           </h1>
           <p className="mb-5">
-            Provident cupiditate voluptatem et in. Quaerat fugiat ut assumenda
-            excepturi exercitationem quasi. In deleniti eaque aut repudiandae et
-            a id nisi.
+            Official Student Support Platform of the Indian Institute of
+            Engineering Science and Technology, Shibpur.
           </p>
           {!user && hasFetched ? (
             <button
